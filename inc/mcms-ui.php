@@ -237,7 +237,7 @@ if(!class_exists('mcms_ui')) :
 				$wp_admin_bar->add_menu(
 					array(
 						 'parent' => 'mcms-security',
-						 'title'  => '<span style="text-shadow:none;color:#333333;">Protect your website now for <span style="color:#00CC00;">$9.95</span>/month (regularly $14.95)</span>',
+						 'title'  => '<span>Protect your website now for <span style="color:#00CC00;">$9.95</span>/month (regularly $14.95)</span>',
 						 'id'    => 'mcms-security-sale2',
 						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array('http://','https://'), '', get_home_url()),
 						 'meta'   => array('title' => 'On sale for a limited time >', 'target' => '_blank')
@@ -306,10 +306,13 @@ if(!class_exists('mcms_ui')) :
 		 */
 		public static function options_page() {
 			$user = wp_get_current_user();
-			if(in_array($user->ID, self::admin_list())) {
-				require_once(MCMS_ADMIN_PATH."lib/mindshare-options-framework/mindshare-options-framework.php");
 
-				$config = array(
+			
+			if(in_array($user->ID, self::admin_list())) {
+				require_once(MCMS_ADMIN_PATH."views/mindshare-admin-options.php");
+				//require_once(MCMS_ADMIN_PATH."lib/mindshare-options-framework/mindshare-options-framework.php");
+
+				/*$config = array(
 					'menu'             => 'settings', //sub page to settings page
 					'page_title'       => 'Mindshare Default Settings', //The name of this page
 					'menu_title'       => 'Mindshare Defaults', // text to use on the menu link
@@ -330,30 +333,7 @@ if(!class_exists('mcms_ui')) :
 				$options_panel->addCheckbox('mcms_load_defaults', array('name' => 'Load Mindshare default WordPress options?', 'std' => FALSE));
 				$options_panel->addParagraph('This feature initializes WordPress with some default settings (such as comment blacklist words, permalink structure, reading options, etc). It is meant to save a little time when setting up new WordPress installs <strong>ONLY</strong>.');
 				$options_panel->addSubtitle('This sets the following WordPress settings:');
-				$options_panel->addParagraph('<strong>&bull;</strong> sets the name/tagline
-<br /><strong>&bull;</strong> turns off organization of uploads into year and month
-<br /><strong>&bull;</strong> disables commenting by default
-<br /><strong>&bull;</strong> deletes Hello Dolly, readme.html, license.txt
-<br /><strong>&bull;</strong> set site admin email to info@mindsharestudios.com
-<br /><strong>&bull;</strong> set RSS feeds to summary mode
-<br /><strong>&bull;</strong> sets time / date settings
-<br /><strong>&bull;</strong> sets avatar_rating to PG
-<br /><strong>&bull;</strong> clears default_pingback_flag
-<br /><strong>&bull;</strong> sets default_ping_status to closed
-<br /><strong>&bull;</strong> disabled comment emails
-<br /><strong>&bull;</strong> enables comment_moderation
-<br /><strong>&bull;</strong> enables comment_registration
-<br /><strong>&bull;</strong> enables comment_whitelist
-<br /><strong>&bull;</strong> disables trackbacks
-<br /><strong>&bull;</strong> populates blacklist words
-<br /><strong>&bull;</strong> enables HTML tag cleanup
-<br /><strong>&bull;</strong> disbales use_smilies
-<br /><strong>&bull;</strong> changes default_post_edit_rows to 15
-<br /><strong>&bull;</strong> sets frontpage to static page
-<br /><strong>&bull;</strong> sets permalinks to "/%category%/%postname%/"');
-				$options_panel->addSubtitle('Additional Notes:');
-				$options_panel->addParagraph('After turning this on and saving you will need to deactivate and then reactivate the '.MCMS_PLUGIN_NAME.' plugin.  After reactivation this setting will automatically return to OFF. This admin page is only visible for Mindshare Studios staff.');
-				$options_panel->CloseTab();
+				*/
 			}
 		}
 	}

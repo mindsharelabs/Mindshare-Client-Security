@@ -88,6 +88,10 @@ if(!defined('MCMS_PLUGIN_NAME')) {
 	define('MCMS_PLUGIN_NAME', 'Mindshare Client Security');
 }
 
+if(!defined('MCMS_PLUGIN_SLUG')) {
+	define('MCMS_PLUGIN_SLUG', 'mcms-admin');
+}
+
 if(!defined('MCMS_ADMIN_PATH')) {
 	define('MCMS_ADMIN_PATH', plugin_dir_path(__FILE__));
 }
@@ -100,6 +104,11 @@ if(!defined('GF_LICENSE_KEY')) {
 if(!class_exists('Mindshare_API_Plugin_Updater')) {
 	// load our custom updater
 	include_once(MCMS_ADMIN_PATH.'/lib/Mindshare_Security_Plugin_Updater.php');
+}
+
+if(is_admin()) {
+	require_once(MCMS_ADMIN_PATH.'lib/options/options.php'); // include options framework
+	//require_once(MCMS_ADMIN_PATH.'views/mindshare-admin-options.php'); // include options config file
 }
 
 if(!class_exists('mcms_admin')) :
@@ -129,26 +138,22 @@ if(!class_exists('mcms_admin')) :
 
 		function __construct() {
 
-			if(is_admin()) {
-				require_once(MCMS_ADMIN_PATH.'lib/options/options.php'); // include options framework
-				require_once(MCMS_ADMIN_PATH.'views/mindshare-admin-options.php'); // include options config file
-			}
-
 			$this->options = get_option('mindshare_admin_options');
 
 			require_once('inc/mcms-files.php');
 			require_once('inc/mcms-ui.php');
 			require_once('inc/mcms-settings.php');
 
-			add_action('pre_user_query', array('mcms_ui', 'user_list'));
-			//add_action('plugins_loaded', array('mcms_ui', 'options_page'));
+			add_action('admin_init', array('mcms_ui', 'admin_list'));
 			add_action('admin_head', array('mcms_ui', 'admin_head'));
+			add_action('admin_menu', array('mcms_ui', 'clear_dashboard'));
 			add_action('admin_bar_menu', array('mcms_ui', 'admin_bar_menu'));
+			add_action('pre_user_query', array('mcms_ui', 'user_list'));
+			add_action('plugins_loaded', array('mcms_ui', 'options_page'));
 			add_action('wp_dashboard_setup', array('mcms_ui', 'register_dashboard_widget'));
 			add_filter('all_plugins', array('mcms_ui', 'plugin_replace'));
-			add_action('admin_init', array('mcms_ui', 'admin_list'));
+
 			add_action('admin_init', array($this, 'check_update'));
-			add_action('admin_menu', array('mcms_ui', 'clear_dashboard'));
 			register_activation_hook(__FILE__, array($this, 'install'));
 		}
 
