@@ -19,7 +19,6 @@ if(!function_exists('is_plugin_active')) {
 	include(ABSPATH.'wp-admin/includes/plugin.php');
 }
 
-
 if(!class_exists('mcms_files')) :
 
 	/**
@@ -122,22 +121,32 @@ if(!class_exists('mcms_files')) :
 				$rules .= "#RewriteRule \.(gif|jpg|png|pdf|mp3|flv|swf)$ ".get_bloginfo('template_directory')."/img/hotlinking.png [R=302,L]\n";
 				$rules .= "\n";
 				$rules .= "# Enable rewrite engine\n";
-				$rules .= "#<IfModule mod_rewrite.c>\n";
-				$rules .= "#RewriteEngine On\n";
+				$rules .= "<IfModule mod_rewrite.c>\n";
+				$rules .= "RewriteEngine On\n";
 				$rules .= "#Options +FollowSymlinks\n";
 				$rules .= "\n";
-				$rules .= "# Add www\n";
-				$rules .= "#RewriteCond %{HTTP_HOST}//s%{HTTPS} ^([^.]{4,}|[^w.]?[^.][^w.]?[^.]?[^w.]?)..*//((s)on|s.*) [NC]\n";
-				$rules .= "#RewriteRule ^ http%3://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]\n";
-				$rules .= "\n";
 				$rules .= "# Remove www\n";
-				$rules .= "#RewriteCond %{HTTP_HOST} ^www.".MCMS_DOMAIN_ROOT."$ [NC]\n";
-				$rules .= "#RewriteRule ^(.*)$ http://".MCMS_DOMAIN_ROOT."/$1 [R=301,L]\n";
+				$rules .= "RewriteCond %{HTTPS} off\n";
+				$rules .= "RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]\n";
+				$rules .= "RewriteRule ^(.*)$ http://%1/$1 [R=301,L]\n";
+				$rules .= "\n";
+				$rules .= "RewriteCond %{HTTPS} on\n";
+				$rules .= "RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]\n";
+				$rules .= "RewriteRule ^(.*)$ https://%1/$1 [R=301,L]\n";
+				$rules .= "\n";
+				$rules .= "# Add www\n";
+				$rules .= "#RewriteCond %{HTTPS} off\n";
+				$rules .= "#RewriteCond %{HTTP_HOST} !^www\.(.*)$ [NC]\n";
+				$rules .= "#RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]\n";
+				$rules .= "\n";
+				$rules .= "#RewriteCond %{HTTPS} on\n";
+				$rules .= "#RewriteCond %{HTTP_HOST} !^www\.(.*)$ [NC]\n";
+				$rules .= "#RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]\n";
 				$rules .= "\n";
 				$rules .= "# Force SSL\n";
 				$rules .= "#RewriteCond %{HTTPS} !=on\n";
 				$rules .= "#RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R,L]\n";
-				$rules .= "#</IfModule>\n";
+				$rules .= "</IfModule>\n";
 				$rules .= "\n";
 				$rules .= "# Add login/out redirects\n";
 				$rules .= "#Redirect 301 ".$home_root."login ".$https_status."://".MCMS_DOMAIN_ROOT.$home_root."wp-login.php\n";
@@ -177,7 +186,7 @@ if(!class_exists('mcms_files')) :
 				$rules .= "#RewriteBase $home_root\n";
 				$rules .= "#RewriteCond %{REMOTE_ADDR} !^111\.111\.111\.111$\n";
 				$rules .= "#RewriteCond %{REQUEST_URI} !^/security\.html$\n";
-				$rules .= "#RewriteRule ^(.*)$ ".str_ireplace(array('http://'.MCMS_DOMAIN_ROOT,'https://'.MCMS_DOMAIN_ROOT), array('',''), get_bloginfo('template_directory'))."/security.html [L]\n";
+				$rules .= "#RewriteRule ^(.*)$ ".str_ireplace(array('http://'.MCMS_DOMAIN_ROOT, 'https://'.MCMS_DOMAIN_ROOT), array('', ''), get_bloginfo('template_directory'))."/security.html [L]\n";
 
 				insert_with_markers($home_path.'.htaccess', 'MINDSHARE', explode("\n", $rules));
 			}

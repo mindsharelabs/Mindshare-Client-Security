@@ -1,17 +1,23 @@
 <?php
 /*
  Plugin Name: Mindshare Client Security
- Plugin URI: http://svn.mindsharestudios.com/mcms-admin/
+ Plugin URI: http://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites.
  Author: Mindshare Studios, Inc
- Version: 3.6.3
+ Version: 3.7
  Author URI: http://mind.sh/are/
  */
 
 /*
- 
+
+ Turn off Dashboard cleanup with:
+
+		remove_action('admin_menu', array('mcms_ui', 'clear_dashboard'));
+		remove_action('admin_head', array('mcms_ui', 'admin_head'));
+
  Changelog:
  
+	 3.7 - switch to EDD, Options for WordPress, updates for WP 3.8, moved to Git, improved htaccess rules
 	 3.6.3 - minor changes, remove tri.be widget, made .htaccess defaults more conservative, code cleanup
 	 3.6.1&2 - updated externals
 	 3.6 - removed login page functions, menu sorting, migrated to Mindshare Theme API
@@ -74,6 +80,10 @@
 if(!defined('MCMS_DOMAIN_ROOT')) {
 	define('MCMS_DOMAIN_ROOT', preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME'])));
 }
+if(!defined('MCMS_UPDATE_URL')) {
+	define('MCMS_UPDATE_URL', 'http://mindsharelabs.com');
+}
+
 if(!defined('MCMS_PLUGIN_NAME')) {
 	define('MCMS_PLUGIN_NAME', 'Mindshare Client Security');
 }
@@ -86,6 +96,12 @@ if(!defined('GF_LICENSE_KEY')) {
 	define('GF_LICENSE_KEY', '25322ade6953d1770a492559697c1480');
 }
 
+// EDD updater
+if(!class_exists('Mindshare_API_Plugin_Updater')) {
+	// load our custom updater
+	include_once(MCMS_ADMIN_PATH.'/lib/Mindshare_Security_Plugin_Updater.php');
+}
+
 if(!class_exists('mcms_admin')) :
 
 	class mcms_admin {
@@ -95,7 +111,28 @@ if(!class_exists('mcms_admin')) :
 		 */
 		public $options;
 
+		/**
+		 * This version number for the Mindshare Auto Update library
+		 * This value is returned when this class or its children if they are
+		 * treated as a string (via __toString())
+		 *
+		 * @var string
+		 */
+		private $class_version = '3.7';
+
+		/**
+		 * Used for automatic updates
+		 *
+		 * @var string
+		 */
+		private $license_key = 'mindshare-client-security-free';
+
 		function __construct() {
+
+			if(is_admin()) {
+				require_once(MCMS_ADMIN_PATH.'lib/options/options.php'); // include options framework
+				require_once(MCMS_ADMIN_PATH.'views/mindshare-admin-options.php'); // include options config file
+			}
 
 			$this->options = get_option('mindshare_admin_options');
 
@@ -104,9 +141,13 @@ if(!class_exists('mcms_admin')) :
 			require_once('inc/mcms-settings.php');
 
 			add_action('pre_user_query', array('mcms_ui', 'user_list'));
-			add_action('plugins_loaded', array('mcms_ui', 'options_page'));
-			add_action('admin_init', array($this, 'init'));
+			//add_action('plugins_loaded', array('mcms_ui', 'options_page'));
+			add_action('admin_head', array('mcms_ui', 'admin_head'));
+			add_action('admin_bar_menu', array('mcms_ui', 'admin_bar_menu'));
+			add_action('wp_dashboard_setup', array('mcms_ui', 'register_dashboard_widget'));
+			add_filter('all_plugins', array('mcms_ui', 'plugin_replace'));
 			add_action('admin_init', array('mcms_ui', 'admin_list'));
+			add_action('admin_init', array($this, 'check_update'));
 			add_action('admin_menu', array('mcms_ui', 'clear_dashboard'));
 			register_activation_hook(__FILE__, array($this, 'install'));
 		}
@@ -115,7 +156,7 @@ if(!class_exists('mcms_admin')) :
 		 * @return string
 		 */
 		function __toString() {
-			return MCMS_PLUGIN_NAME.' 3.6.3';
+			return MCMS_PLUGIN_NAME.' '.$this->class_version;
 		}
 
 		/**
@@ -142,19 +183,53 @@ if(!class_exists('mcms_admin')) :
 			}
 		}
 
+
+
 		/**
-		 * init
+		 * Check for available updates
 		 *
 		 */
-		public function init() {
-			require_once('lib/mindshare-auto-update/mindshare-auto-update.php');
-			new mindshare_auto_update(plugin_basename(__FILE__), plugin_dir_path(__FILE__));
 
-			add_action('admin_head', array('mcms_ui', 'admin_head'));
-			add_action('admin_bar_menu', array('mcms_ui', 'admin_bar_menu'));
-			add_action('wp_dashboard_setup', array('mcms_ui', 'register_dashboard_widget'));
+		public function check_update() {
 
-			add_filter('all_plugins', array('mcms_ui', 'plugin_replace'));
+			$mindshare_security_updater = new Mindshare_Security_Plugin_Updater(
+				MCMS_UPDATE_URL,
+				__FILE__,
+				array(
+					 'version'   => $this->class_version, // current version number
+					 'license'   => $this->license_key,
+					 'item_name' => MCMS_PLUGIN_NAME, // name of this plugin
+					 'author'    => 'Mindshare Studios, Inc.'
+				)
+			);
+
+			$response = wp_remote_get(
+				add_query_arg(
+					array(
+						 'edd_action' => 'activate_license',
+						 'license'    => $this->license_key,
+						 'item_name'  => urlencode(MCMS_PLUGIN_NAME) // the name of our product in EDD
+					),
+					MCMS_UPDATE_URL
+				),
+				array(
+					 'timeout'   => 15,
+					 'sslverify' => FALSE
+				)
+			);
+
+			// make sure the response came back okay
+			if(is_wp_error($response)) {
+				return FALSE;
+			}
+
+			// decode the license data
+			$license_data = json_decode(wp_remote_retrieve_body($response));
+
+			// $license_data->license will be either "active" or "inactive"
+			if(is_object($license_data)) {
+				update_option('mapi_license_status', $license_data->license);
+			}
 		}
 
 		/**

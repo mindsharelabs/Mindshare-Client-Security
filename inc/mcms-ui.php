@@ -30,19 +30,13 @@ if(!class_exists('mcms_ui')) :
 				#footer, #footer-upgrade, #favorite-actions, #footer-left, #acx_plugin_dashboard_widget, #blogplay_db_widget, #yoast_posts, #yst_db_widget, #dashboard_op, #header-logo, #wpgeo_dashboard, #dashboard_secondary, #dashboard_primary, #dashboard_quick_press, #dashboard_recent_comments, #dashboard_plugins, #dashboard_right_now, #fluency-footer, #wp-admin-bar-wp-logo, #tab-link-help-content, #tab-panel-help-content, #wp-admin-bar-new-content, #welcome-panel, label[for^='wp_welcome_panel'], #blc-more-plugins-link-wrap {
 					display:none !important;
 				}
-				#wpbody-content .wrap h2 a {
+				/*#wpbody-content .wrap h2 a {
 					color:#000000 !important;
-				}
-					/*removed mindshare branding in v3.5 #wpadminbar ul li#wp-admin-bar-mcms {
-						background:url('//mind.sh/are/media/smalllogo.png') no-repeat 0 0;
-						background-size:26px;
-						background-position:0 25%;
-						padding:0 0 0 28px;
-					}*/
+				}*/
 			</style>
 
 			<script type='text/javascript'>
-				jQuery(function() {
+				/*jQuery(function() {
 
 					// wp geo
 					jQuery('#wpgeo_location h3.hndle span').html('<span>Location (add geographic metadata to this page)</span>');
@@ -72,7 +66,7 @@ if(!class_exists('mcms_ui')) :
 					jQuery('tr.show-admin-bar').remove();
 					jQuery('tr:contains(\'Keyboard Shortcuts\')').remove();
 
-				});
+				});*/
 			</script>
 		<?php
 		}

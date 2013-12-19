@@ -24,7 +24,7 @@
  * 2.1 - Added import / export, refactored pages and sections, bugfixes
  * 2.0 - Major refactor in prep for public release
  * 0.3.4 - some refactoring, styling for checkbox lists
- * 0.3.3 - updated codemirror
+ * 0.3.3 - updated CodeMirror
  * 0.3.2 - fixed issue with code fields. css updates
  * 0.3.1 - fixed htmlspecialchars/stripslashes issue with text fields
  * 0.3 - bugfixes
@@ -35,15 +35,15 @@
  *
  *
  */
-if(!class_exists('PLUGINNAME_options')) :
-	abstract class PLUGINNAME_options {
+if(!class_exists('mindshare_admin_options')) :
+	abstract class mindshare_admin_options {
 
 		/**
 		 * The MOF version number.
 		 *
 		 * @var string
 		 */
-		private $version = '2.0';
+		private $version = '2.1';
 
 		private $option_group, $setup, $settings, $sections;
 
@@ -76,49 +76,51 @@ if(!class_exists('PLUGINNAME_options')) :
 
 		// Default values for the setup variable
 		private $default_project = array(
-				 'project_name' => 'Untitled Project',
-				 'project_slug' => 'untitled-project',
-				 'menu'         => 'settings',
-				 'page_title'   => 'Untitled Project Settings',
-				 'menu_title'   => 'Untitled Project',
-				 'capability'   => 'manage_options',
-				 'option_group' => 'untitled_project_options',
-				 'slug'         => 'untitled-project-settings',
-				 'page_icon'	=> 'options-general',
-				 'icon_url'		=> '',
-				 'position'		=> null
-			);
+			'project_name' => 'Untitled Project',
+			'project_slug' => 'untitled-project',
+			'menu'         => 'settings',
+			'page_title'   => 'Untitled Project Settings',
+			'menu_title'   => 'Untitled Project',
+			'capability'   => 'manage_options',
+			'option_group' => 'untitled_project_options',
+			'slug'         => 'untitled-project-settings',
+			'page_icon'    => 'options-general',
+			'icon_url'     => '',
+			'position'     => NULL
+		);
 
 		private $default_page = array(
-				 'menu'         => 'settings',
-				 'page_title'   => 'New Page',
-				 'menu_title'   => 'New Page',
-				 'capability'   => 'manage_options',
-				 'slug'         => 'new-page',
-				 'page_icon'	=> 'options-general',
-				 'icon_url'		=> '',
-				 'position'		=> null
+			'menu'       => 'settings',
+			'page_title' => 'New Page',
+			'menu_title' => 'New Page',
+			'capability' => 'manage_options',
+			'slug'       => 'new-page',
+			'page_icon'  => 'options-general',
+			'icon_url'   => '',
+			'position'   => NULL
 		);
 
 		private $default_setting = array(
-				'title'   	=> null,
-				'desc'    	=> null,
-				'std'     	=> null,
-				'type'    	=> null,
-				'section' 	=> '',
-				'class'		=> null, 			// class to be applied to the input
-				'disabled'	=> false
-			);
+			'title'    => NULL,
+			'desc'     => NULL,
+			'std'      => NULL,
+			'type'     => NULL,
+			'section'  => '',
+			'class'    => NULL, // class to be applied to the input
+			'disabled' => FALSE
+		);
 
 		/**
 		 * Constructor
-		 * @param array $setup Contains the universal project setup parameters
+		 *
+		 * @param array $setup    Contains the universal project setup parameters
 		 * @param array $settings Contains all of the settings fields and their assigned section
 		 * @param array $sections Contains the various sections (pages and tabs) and their relationships
 		 * @param array $subpages (optional) Contains subpages to be generated off of the main page if a top-level menus is being created
+		 *
 		 * @return null
 		 */
-		public function __construct($setup, $settings, $sections = null, $pages = null) {
+		public function __construct($setup, $settings, $sections = NULL, $pages = NULL) {
 
 			// Merge default setup with user-specified setup parameters
 			$setup = wp_parse_args($setup, $this->default_project);
@@ -137,7 +139,7 @@ if(!class_exists('PLUGINNAME_options')) :
 			$this->settings = $this->initialize_settings($settings);
 
 			// If we're exporting options, prepare and deliver the export file
-			add_action( 'admin_post_export', array($this, 'download_export') );
+			add_action('admin_post_export', array($this, 'download_export'));
 
 			if(isset($_POST['action']) && $_POST['action'] == 'update') {
 				$this->save_options();
@@ -147,7 +149,6 @@ if(!class_exists('PLUGINNAME_options')) :
 			//$this->prepare_menus($setup, $sections);
 
 			add_action('admin_menu', array($this, 'add_menus'));
-
 		}
 
 		/*----------------------------------------------------------------*/
@@ -156,27 +157,25 @@ if(!class_exists('PLUGINNAME_options')) :
 		/*
 		/*----------------------------------------------------------------*/
 
-
 		/**
 		 * Checks nonce and saves options to database
 		 *
-		 * @access private
+		 * @access   private
 		 *
-		 * @param $_POST data (array)
-		 *
+		 * @internal param \data $_POST
 		 */
 
 		private function save_options() {
-			$nonce = $_POST[$this->setup['project_slug'] . '_nonce'];
-			if( !wp_verify_nonce( $nonce, $this->setup['project_slug']) )
+			$nonce = $_POST[$this->setup['project_slug'].'_nonce'];
+			if(!wp_verify_nonce($nonce, $this->setup['project_slug'])) {
 				die('Security check. Invalid nonce.');
+			}
 
 			// Get array of form data
 			$input = $_POST[$this->option_group];
 
 			// For each settings field, run the input through it's defined validation function
 			$settings = $this->settings;
-
 
 			// Be default $_POST ignores checkboxes with no value set, so we need to iterate through
 			// all defined checkboxes and set their value to 0 if they haven't been set in the input
@@ -193,7 +192,6 @@ if(!class_exists('PLUGINNAME_options')) :
 				if(isset($input[$id]) && !isset($setting['subfields']) && $input[$id] != '') {
 
 					$input[$id] = $this->validate_options($id, $input[$id], $setting);
-
 				} elseif(isset($setting['subfields'])) {
 
 					foreach($input[$id] as $sub_id => $subfield) {
@@ -201,19 +199,14 @@ if(!class_exists('PLUGINNAME_options')) :
 						if(isset($input[$id][$sub_id]) && $input[$id][$sub_id] != '') {
 
 							$input[$id][$sub_id] = $this->validate_options($sub_id, $input[$id][$sub_id], $setting['subfields'][$sub_id]);
-
 						}
-
 					}
-
 				}
-
 			}
 
 			if($this->reset_options) {
 
-				$input = null;
-
+				$input = NULL;
 			} else {
 
 				// Merge the form data with the existing options, updating as necessary
@@ -230,10 +223,8 @@ if(!class_exists('PLUGINNAME_options')) :
 				$this->options = $input;
 
 				// Let the page renderer know that the settings have been updated
-				$this->settings_updated = true;
-
+				$this->settings_updated = TRUE;
 			}
-
 		}
 
 		/**
@@ -241,9 +232,9 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 * @access private
 		 *
-		 * @param string $id ID of field
-		 * @param mixed $input Input
-		 * @param array $setting Setting properties
+		 * @param string $id      ID of field
+		 * @param mixed  $input   Input
+		 * @param array  $setting Setting properties
 		 *
 		 * @return mixed $input Validated input
 		 *
@@ -251,48 +242,41 @@ if(!class_exists('PLUGINNAME_options')) :
 
 		private function validate_options($id, $input, $setting) {
 
-			if(method_exists($this, 'validate_field_' . $setting['type']) && !has_filter('validate_field_' . $setting['type'] . '_override')) {
+			if(method_exists($this, 'validate_field_'.$setting['type']) && !has_filter('validate_field_'.$setting['type'].'_override')) {
 
 				// If a validation filter has been specified for the setting type, register it with add_filters
-				add_filter( 'validate_field_' . $setting['type'], array($this, 'validate_field_' . $setting['type']), 10, 2 );
+				add_filter('validate_field_'.$setting['type'], array($this, 'validate_field_'.$setting['type']), 10, 2);
 			}
 
-			if(has_filter( 'validate_field_' . $id )) {
+			if(has_filter('validate_field_'.$id)) {
 
 				// If there's a validation function for this particular field ID
-				$input = apply_filters( 'validate_field_' . $id , $input, $setting );
-
-			} elseif(has_filter( 'validate_field_' . $setting['type'] ) || has_filter('validate_field_' . $setting['type'] . '_override')) {
+				$input = apply_filters('validate_field_'.$id, $input, $setting);
+			} elseif(has_filter('validate_field_'.$setting['type']) || has_filter('validate_field_'.$setting['type'].'_override')) {
 
 				// If there's a validation for this field type or an override
-				if(has_filter('validate_field_' . $setting['type'] . '_override')) {
+				if(has_filter('validate_field_'.$setting['type'].'_override')) {
 
-					$input = apply_filters( 'validate_field_' . $setting['type'] . '_override' , $input, $setting );
+					$input = apply_filters('validate_field_'.$setting['type'].'_override', $input, $setting);
+				} elseif(has_filter('validate_field_'.$setting['type'])) {
 
-				} elseif(has_filter( 'validate_field_' . $setting['type'])) {
-
-					$input = apply_filters( 'validate_field_' . $setting['type'] , $input, $setting );
-
+					$input = apply_filters('validate_field_'.$setting['type'], $input, $setting);
 				}
-
 			} else {
 
 				// If no validator specified, use the default validator
 				// @todo right now the validator just passes the input back. see what base-level validation we need
 				$input = $this->validate_field_default($input, $setting);
-
 			}
 
-			if(is_wp_error( $input ) ) {
+			if(is_wp_error($input)) {
 
 				// If an input fails validation, put the error message into the errors array for display
 				$this->errors[$id] = $input->get_error_message();
 				$input = $input->get_error_data();
-
 			}
 
 			return $input;
-
 		}
 
 		/*----------------------------------------------------------------*/
@@ -326,13 +310,14 @@ if(!class_exists('PLUGINNAME_options')) :
 				$settings[$id] = wp_parse_args($setting, $this->default_setting);
 
 				// If a custom setting template has been specified, load those values as well
-				if(method_exists($this, 'default_field_' . $setting['type'])) {
-					$settings[$id] = wp_parse_args($settings[$id], call_user_func(array($this, 'default_field_' . $setting['type'])));
+				if(method_exists($this, 'default_field_'.$setting['type'])) {
+					$settings[$id] = wp_parse_args($settings[$id], call_user_func(array($this, 'default_field_'.$setting['type'])));
 				}
 
 				// Load the array of settings currently in use
-				if(!isset($this->fields[$setting['type']]))
-					$this->fields[$setting['type']] = true;
+				if(!isset($this->fields[$setting['type']])) {
+					$this->fields[$setting['type']] = TRUE;
+				}
 
 				// Set the default value if no option exists
 				if(!isset($options[$id])) {
@@ -346,23 +331,21 @@ if(!class_exists('PLUGINNAME_options')) :
 						// Fill in missing parts of the array
 						$settings[$id]['subfields'][$sub_id] = wp_parse_args($sub_setting, $this->default_setting);
 
-						if(method_exists($this, 'default_field_' . $sub_setting['type'])) {
-							$settings[$id]['subfields'][$sub_id] = wp_parse_args($settings[$id]['subfields'][$sub_id], call_user_func(array($this, 'default_field_' . $sub_setting['type'])));
+						if(method_exists($this, 'default_field_'.$sub_setting['type'])) {
+							$settings[$id]['subfields'][$sub_id] = wp_parse_args($settings[$id]['subfields'][$sub_id], call_user_func(array($this, 'default_field_'.$sub_setting['type'])));
 						}
 
 						// Set default value if needed
 						if(!isset($options[$id][$sub_id])) {
 							$options[$id][$sub_id] = $setting['subfields'][$sub_id]['std'];
 						}
-
 					}
 				}
 			}
 
 			$this->options = $options;
 
-			return($settings);
-
+			return ($settings);
 		}
 
 		/*----------------------------------------------------------------*/
@@ -374,11 +357,14 @@ if(!class_exists('PLUGINNAME_options')) :
 		/**
 		 * Sets the top level menu slug based on the user preference
 		 *
-		 * @access private
+		 * @access   private
 		 *
-		 * @param $setup array
-		 * @param $subpages array
+		 * @param $menu
 		 *
+		 * @internal param array $setup
+		 * @internal param array $subpages
+		 *
+		 * @return string
 		 */
 
 		private function parent_slug($menu) {
@@ -386,37 +372,37 @@ if(!class_exists('PLUGINNAME_options')) :
 			switch($menu) {
 				case 'posts':
 					return 'edit.php';
-					
+
 				case 'dashboard':
 					return 'index.php';
-					
+
 				case 'media':
 					return 'upload.php';
-					
+
 				case 'links':
 					return 'link-manager.php';
-					
+
 				case 'pages':
 					return 'edit.php?post_type=page';
-					
+
 				case 'comments':
 					return 'edit-comments.php';
-					
+
 				case 'theme':
 					return 'themes.php';
-					
+
 				case 'plugins':
 					return 'plugins.php';
-					
+
 				case 'users':
 					return 'users.php';
-					
+
 				case 'tools':
 					return 'tools.php';
-					
+
 				case 'settings':
 					return 'options-general.php';
-					
+
 				default:
 					if(post_type_exists($menu)) {
 						return 'edit.php?post_type='.$menu;
@@ -437,21 +423,21 @@ if(!class_exists('PLUGINNAME_options')) :
 
 			// Create an array to contain all pages, and add the main setup page (registered with $setup)
 			$pages = array(
-					$this->setup['slug']	=> array(
-													'menu'			=> $this->setup['menu'],
-													'page_title'	=> $this->setup['page_title'],
-													'menu_title'	=> $this->setup['menu_title'],
-													'capability'	=> $this->setup['capability'],
-													'page_icon'		=> $this->setup['page_icon'],
-													'icon_url'		=> $this->setup['icon_url'],
-													'position'		=> $this->setup['position']
-						)
+				$this->setup['slug'] => array(
+					'menu'       => $this->setup['menu'],
+					'page_title' => $this->setup['page_title'],
+					'menu_title' => $this->setup['menu_title'],
+					'capability' => $this->setup['capability'],
+					'page_icon'  => $this->setup['page_icon'],
+					'icon_url'   => $this->setup['icon_url'],
+					'position'   => $this->setup['position']
+				)
 			);
 
 			// If additional pages have been specified, load them into the pages array
-			if($this->pages){
+			if($this->pages) {
 				foreach($this->pages as $slug => $page) {
-					$pages[$slug] = wp_parse_args( $page, $this->default_page );
+					$pages[$slug] = wp_parse_args($page, $this->default_page);
 				}
 			}
 
@@ -459,7 +445,7 @@ if(!class_exists('PLUGINNAME_options')) :
 			foreach($pages as $slug => $page) {
 
 				// If page does not have a menu, create a top level menu item
-				if($page['menu'] == null) {
+				if($page['menu'] == NULL) {
 
 					$id = add_menu_page(
 						$page['page_title'],
@@ -470,25 +456,22 @@ if(!class_exists('PLUGINNAME_options')) :
 						$page['icon_url'],
 						$page['position']
 					);
-
 				} else {
 
 					$id = add_submenu_page(
-						$this->parent_slug($page['menu']), 	// parent slug
-						$page['page_title'], 				// page title
-						$page['menu_title'], 				// menu title
-						$page['capability'], 				// capability
-						$slug,								// slug
-						array($this, 'show_page')			// display function
+						$this->parent_slug($page['menu']), // parent slug
+						$page['page_title'], // page title
+						$page['menu_title'], // menu title
+						$page['capability'], // capability
+						$slug, // slug
+						array($this, 'show_page') // display function
 					);
-
 				}
 
 				add_action('admin_print_scripts-'.$id, array($this, 'scripts'));
 
 				// Add the ID back into the array so we can locate this page again later
 				$pages[$slug]['id'] = $id;
-
 			}
 
 			// Make the reorganized array available to the rest of the class
@@ -583,24 +566,21 @@ if(!class_exists('PLUGINNAME_options')) :
 
 			foreach($this->pages as $slug => $page) {
 
-				if($page['id'] == $screen->id){
+				if($page['id'] == $screen->id) {
 
 					if(isset($this->sections[$slug])) {
 
 						// If sections have been given for this specific page
 						$page['sections'] = $this->sections[$slug];
-
 					} else {
 
 						// If there are sections, but none for this specific page, create one section w/ the page's slug
 						$page['sections'][$slug] = $slug;
-
 					}
 
 					$page['slug'] = $slug;
 
 					return $page;
-
 				}
 			}
 		}
@@ -611,72 +591,73 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 *
 		 */
-		
-		public function show_page() { ?>
+
+		public function show_page() {
+			?>
 			<?php $page = $this->get_page_by_screen(get_current_screen()); ?>
 			<div class="wrap">
 			<div class="icon32" id="icon-<?php echo $this->setup['page_icon'] ?>"></div>
 			<h2><?php echo $page["page_title"] ?> </h2>
 
-			<?php if($this->settings_updated)
+			<?php if($this->settings_updated) {
 				echo '<div id="setting-error-settings_updated" class="updated settings-error"><p><strong>Settings saved.</strong></p></div>';
+			}
 
-			if($this->settings_imported)
+			if($this->settings_imported) {
 				echo '<div id="setting-error-settings_updated" class="updated settings-error"><p><strong>Settings successfully imported.</strong></p></div>';
+			}
 
 			if($this->errors) {
 				foreach($this->errors as $id => $error_message) {
-					echo '<div id="message" class="error"><p>' . $error_message . '</p></div>';
-					echo '<style type="text/css">#' . $id . '{ border: 1px solid #d00; }</style>';
+					echo '<div id="message" class="error"><p>'.$error_message.'</p></div>';
+					echo '<style type="text/css">#'.$id.'{ border: 1px solid #d00; }</style>';
 				}
 			} ?>
 
 			<form id="<?php echo $page['slug']; ?>" action="" method="post">
-
-				<?php wp_nonce_field( $this->setup['project_slug'], $this->setup['project_slug'] . '_nonce' ); ?>
+				<?php wp_nonce_field($this->setup['project_slug'], $this->setup['project_slug'].'_nonce'); ?>
 				<input type="hidden" name="action" value="update">
 
 				<?php // only display tabs if there's more than one section
-				if(count($page['sections']) > 1) { ?>
+				if(count($page['sections']) > 1) {
+					?>
 
 					<ul class="nav nav-tabs">
-
-						<?php $isfirst = true; ?>
+						<?php $isfirst = TRUE; ?>
 						<?php foreach($page['sections'] as $section_slug => $section) { ?>
 
-							<li <?php if($isfirst) echo "class='active'"; ?>><a href="#<?php echo $section_slug ?>" data-toggle="tab"><?php echo $section ?></a></li>
+							<li <?php if($isfirst) {
+								echo "class='active'";
+							} ?>><a href="#<?php echo $section_slug ?>" data-toggle="tab"><?php echo $section ?></a></li>
 
-							<?php $isfirst = false; ?>
+							<?php $isfirst = FALSE; ?>
 
 						<?php } ?>
-
 					</ul>
 
 				<?php } ?>
 				<div class="tab-content">
-				<?php $isfirst = true; ?>
+					<?php $isfirst = TRUE; ?>
 
 					<?php foreach($page['sections'] as $section_slug => $section) { ?>
 
-						<div class="tab-pane <?php if($isfirst) echo 'active'; ?>" id="<?php echo $section_slug ?>">
-
+						<div class="tab-pane <?php if($isfirst) {
+							echo 'active';
+						} ?>" id="<?php echo $section_slug ?>">
 							<?php if(count($page['sections']) > 1) { ?>
 								<h3><?php echo $section ?></h3>
 							<?php } ?>
 
 							<?php // Check to see if a user-created override for the display function is available
-							if(has_action('show_section_' . $section_slug)) {
+							if(has_action('show_section_'.$section_slug)) {
 
-								do_action('show_section_' . $section_slug, $section_slug, $this->settings);
-
+								do_action('show_section_'.$section_slug, $section_slug, $this->settings);
 							} else {
 
-								$this->show_section($section_slug); 
-
+								$this->show_section($section_slug);
 							} ?>
-
 						</div>
-						<?php $isfirst = false; ?>
+						<?php $isfirst = FALSE; ?>
 					<?php } ?>
 				</div>
 				<p class="submit"><input name="Submit" type="submit" class="button-primary" value="Save Changes" /></p>
@@ -694,7 +675,8 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 
-		private function show_section($section) { ?>
+		private function show_section($section) {
+			?>
 			<?php $settings = $this->settings; ?>
 			<?php $options = $this->options; ?>
 			<table class="form-table">
@@ -704,74 +686,65 @@ if(!class_exists('PLUGINNAME_options')) :
 						// For each part of the field (begin, content, and end) check to see if a user-specified override is available in the child class
 
 						/**
-						* "field_begin" override
-						*/
+						 * "field_begin" override
+						 */
 
-						if( has_action('show_field_' . $setting['type'] . "_begin" ) ) {
+						if(has_action('show_field_'.$setting['type']."_begin")) {
 
 							// If there's a "field begin" override for this specific field
-							do_action('show_field_' . $setting['type'] . '_begin', $id, $setting);
-
-						} elseif( has_action('show_field_begin') ) {
+							do_action('show_field_'.$setting['type'].'_begin', $id, $setting);
+						} elseif(has_action('show_field_begin')) {
 
 							// If there's a "field begin" override for all fields
 							do_action('show_field_begin', $id, $setting);
-
-						}elseif( method_exists($this, 'show_field_' . $setting['type'] . "_begin") ) {
+						} elseif(method_exists($this, 'show_field_'.$setting['type']."_begin")) {
 
 							// If a custom override has been supplied in this file
-							call_user_func( array( $this, "show_field_" . $setting['type'] . "_begin" ), $id, $setting );
-
+							call_user_func(array($this, "show_field_".$setting['type']."_begin"), $id, $setting);
 						} else {
 
 							// If no override, use the default
-							$this->show_field_begin( $id, $setting ); 
+							$this->show_field_begin($id, $setting);
 						}
 
-
 						/**
-						* "show_field" override
-						*/
+						 * "show_field" override
+						 */
 
-						if( has_action('show_field_' . $setting['type'] ) ) {
+						if(has_action('show_field_'.$setting['type'])) {
 
-							do_action('show_field_' . $setting['type'], $id, $setting);
-
+							do_action('show_field_'.$setting['type'], $id, $setting);
 						} else {
 							// If no custom override, use the default
-							call_user_func( array( $this, "show_field_" . $setting['type'] ), $id, $setting );
+							call_user_func(array($this, "show_field_".$setting['type']), $id, $setting);
 						}
 
 						/**
-						* "field_end" override
-						*/
+						 * "field_end" override
+						 */
 
-						if( has_action('show_field_' . $setting['type'] . "_end" ) ) {
+						if(has_action('show_field_'.$setting['type']."_end")) {
 
 							// If there's a "field begin" override for this specific field
-							do_action('show_field_' . $setting['type'] . '_end', $id, $setting);
-
-						} elseif( has_action('show_field_end') ) {
+							do_action('show_field_'.$setting['type'].'_end', $id, $setting);
+						} elseif(has_action('show_field_end')) {
 
 							// If there's a "field begin" override for all fields
 							do_action('show_field_end', $id, $setting);
-
-						} elseif( method_exists($this, 'show_field_' . $setting['type'] . "_end") ) {
+						} elseif(method_exists($this, 'show_field_'.$setting['type']."_end")) {
 
 							// If a custom override has been supplied in this file
-							call_user_func( array( $this, "show_field_" . $setting['type'] . "_end" ), $id, $setting );
-
+							call_user_func(array($this, "show_field_".$setting['type']."_end"), $id, $setting);
 						} else {
 
 							// If no override, use the default
-							$this->show_field_end( $id, $setting );
-
+							$this->show_field_end($id, $setting);
 						}
-
 					}
 				} ?>
 			</table>
-		<?php }
+		<?php
+		}
 
 		/*----------------------------------------------------------------
 		 *
@@ -789,14 +762,14 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Begin field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 * @since  0.1
 		 * @access private
 		 */
 		private function show_field_begin($id, $field) {
 			echo '<tr valign="top">';
-			echo '<th scope="row"><label for="' . $id . '">' . $field['title'] . '</label></th>';
+			echo '<th scope="row"><label for="'.$id.'">'.$field['title'].'</label></th>';
 			echo '<td>';
 		}
 
@@ -804,7 +777,7 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * End field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 *
 		 * @since  0.1
@@ -813,18 +786,19 @@ if(!class_exists('PLUGINNAME_options')) :
 		private function show_field_end($id, $field) {
 
 			if($field['desc'] != '') {
-				echo '<span class="description">' . $field['desc'] . '</span>';
+				echo '<span class="description">'.$field['desc'].'</span>';
 			}
 			echo '</td>';
 			echo '</tr>';
-
 		}
 
 		/**
 		 * Validate field
 		 *
 		 * @param mixed $input
+		 * @param       $setting
 		 *
+		 * @return mixed
 		 */
 		private function validate_field_default($input, $setting) {
 
@@ -834,19 +808,19 @@ if(!class_exists('PLUGINNAME_options')) :
 		/**
 		 *
 		 * Wrapper for fields with subfields
-		 * 
+		 *
 		 */
 
 		/**
 		 * Show subfields field begin
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_subfields_begin($id, $field) {
 			echo '<tr valign="top">';
-			echo '<th scope="row"><label for="' . $id . '">' . $field['title'] . '</label></th>';
+			echo '<th scope="row"><label for="'.$id.'">'.$field['title'].'</label></th>';
 			echo '<td class="subfields">';
 		}
 
@@ -854,86 +828,81 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show subfields field
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_subfields($id, $field) {
 
 			foreach($field['subfields'] as $subfield_id => $subfield) {
 
-				if( has_action('show_field_' . $subfield['type'] ) ) {
+				if(has_action('show_field_'.$subfield['type'])) {
 
-					do_action('show_field_' . $subfield['type'], $id, $subfield);
-
+					do_action('show_field_'.$subfield['type'], $id, $subfield);
 				} else {
 					// If no custom override, use the default
-					call_user_func( array( $this, "show_field_" . $subfield['type'] ), $id, $subfield, $subfield_id );
+					call_user_func(array($this, "show_field_".$subfield['type']), $id, $subfield, $subfield_id);
 				}
 			}
 		}
-		
+
 		/**
 		 *
 		 * Heading field
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Show Heading field begin
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_heading_begin($id, $field) {
 
 			echo '</table>';
-
 		}
 
 		/**
 		 * Show Heading field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_heading($id, $field) {
 
-			echo '<h4>' . $field['title'] . '</h4>';
+			echo '<h4>'.$field['title'].'</h4>';
 
 			if($field['desc'] != '') {
 
-				echo '<p>' . $field['desc'] . '</p>';
-
+				echo '<p>'.$field['desc'].'</p>';
 			}
-
 		}
 
 		/**
 		 * Show Heading field end.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_heading_end($id, $field) {
 
 			echo '<table class="form-table">';
-
 		}
 
 		/**
 		 *
 		 * Paragraph field
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Show Paragraph field begin
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_paragraph_begin($id, $field) {
@@ -944,38 +913,29 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show Paragraph field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_paragraph($id, $field) {
 			if($field['title']) {
-				echo '<p><strong>' . $field['title'] . '</strong></p>';
+				echo '<p><strong>'.$field['title'].'</strong></p>';
 			}
-			echo '<p>' . $field['desc'] . '</p>';
+			echo '<p>'.$field['desc'].'</p>';
 		}
 
 		/**
 		 * Show Paragraph field end.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_paragraph_end($id, $field) {
 
 			echo '</td>';
 			echo '</tr>';
-
 		}
-		
 
-		
-		/**
-		 *
-		 * Text field
-		 * 
-		 */
-		
 		/**
 		 * Defaults for text field
 		 *
@@ -983,32 +943,33 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_text() {
-		
+
 			$args = array(
-				'format' => null
+				'format' => NULL
 			);
 
 			return $args;
 		}
-		
+
 		/**
 		 * Show field Text.
 		 *
+		 * @param        $id
 		 * @param string $field
+		 *
+		 * @param null   $subfield_id
 		 *
 		 * @since  0.1
 		 * @access private
 		 */
-		private function show_field_text($id, $field, $subfield_id = null) {
+		private function show_field_text($id, $field, $subfield_id = NULL) {
 
 			if($field['format'] == 'phone') {
 
-				echo '<input id="' . ($subfield_id ? $subfield_id : $id) . '" class="form-control bfh-phone" data-format="(ddd) ddd-dddd" type="text" id="' . $id . '" name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" placeholder="' . $field['std'] . '" value="' . esc_attr($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '>';	
-
+				echo '<input id="'.($subfield_id ? $subfield_id : $id).'" class="form-control bfh-phone" data-format="(ddd) ddd-dddd" type="text" id="'.$id.'" name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" placeholder="'.$field['std'].'" value="'.esc_attr($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" '.($field['disabled'] ? 'disabled="true"' : '').'>';
 			} else {
 
-				echo '<input id="' . ($subfield_id ? $subfield_id : $id) . '" class="form-control" type="text" name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" placeholder="' . $field['std'] . '" value="' . esc_attr($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '>';
-			
+				echo '<input id="'.($subfield_id ? $subfield_id : $id).'" class="form-control" type="text" name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" placeholder="'.$field['std'].'" value="'.esc_attr($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" '.($field['disabled'] ? 'disabled="true"' : '').'>';
 			}
 		}
 
@@ -1016,8 +977,10 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Validate Text field.
 		 *
 		 * @param string $input
-		 * @return string $input
 		 *
+		 * @param        $setting
+		 *
+		 * @return string $input
 		 */
 		public function validate_field_text($input, $setting) {
 
@@ -1026,42 +989,34 @@ if(!class_exists('PLUGINNAME_options')) :
 				$input = preg_replace("/[^0-9]/", '', $input);
 
 				//if we have 10 digits left, it's probably valid.
-				if (strlen($input) == 10){
+				if(strlen($input) == 10) {
 
 					return $input;
-
 				} else {
 
 					return new WP_Error('error', __("Invalid phone number."), $input);
-
 				}
-
 			} elseif($setting['format'] == 'zip') {
 
 				if(preg_match('/^\d{5}$/', $input)) {
 
 					return $input;
-
 				} else {
 
-					return new WP_Error('error', __("Invalid ZIP code."), $input);		
-
+					return new WP_Error('error', __("Invalid ZIP code."), $input);
 				}
-
 			} else {
 
-				return sanitize_text_field( $input );
+				return sanitize_text_field($input);
 			}
-
 		}
-
 
 		/**
 		 *
 		 * Textarea field
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Defaults for textarea field
 		 *
@@ -1069,67 +1024,66 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_textarea() {
-		
+
 			$args = array(
-				'rows' 	=> 5,
-				'cols'	=> 39
+				'rows' => 5,
+				'cols' => 39
 			);
 
 			return $args;
 		}
 
-
 		/**
 		 * Show Textarea field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_textarea($id, $field) {
 
-			echo '<textarea class="form-control ' . $field['class'] . '" id="' . $id . '" name="' . $this->option_group . '[' . $id . ']" placeholder="' . $field['std'] . '" rows="' . $field['rows'] . '" cols="' . $field['cols'] . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '>' . wp_htmledit_pre($this->options[$id]) . '</textarea>';
-
+			echo '<textarea class="form-control '.$field['class'].'" id="'.$id.'" name="'.$this->option_group.'['.$id.']" placeholder="'.$field['std'].'" rows="'.$field['rows'].'" cols="'.$field['cols'].'" '.($field['disabled'] ? 'disabled="true"' : '').'>'.wp_htmledit_pre($this->options[$id]).'</textarea>';
 		}
 
 		/**
 		 * Validate Textarea field.
 		 *
 		 * @param string $input
-		 * @return string $input
 		 *
+		 * @param        $setting
+		 *
+		 * @return string $input
 		 */
 		public function validate_field_textarea($input, $setting) {
 
-			return esc_textarea( $input );
-
+			return esc_textarea($input);
 		}
-
 
 		/**
 		 *
 		 * Checkbox field
-		 * 
+		 *
 		 */
 
 		/**
 		 * Show Checkbox field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_checkbox($id, $field) {
-			echo '<input class="checkbox ' . $field['class'] . '" type="checkbox" id="' . $id . '" name="' . $this->option_group . '[' . $id . ']" value="1" '.checked($this->options[$id], 1, FALSE).' ' . ($field['disabled'] ? 'disabled="true"' : '') . ' />';
-			
+			echo '<input class="checkbox '.$field['class'].'" type="checkbox" id="'.$id.'" name="'.$this->option_group.'['.$id.']" value="1" '.checked($this->options[$id], 1, FALSE).' '.($field['disabled'] ? 'disabled="true"' : '').' />';
+
 			if($field['desc'] != '') {
-				echo '<label for="' . $id . '">' . $field['desc'] . '</label>';
+				echo '<label for="'.$id.'">'.$field['desc'].'</label>';
 			}
 		}
 
 		/**
 		 * Checkbox end field
 		 *
+		 * @param        $id
 		 * @param string $field
 		 *
 		 *
@@ -1139,15 +1093,14 @@ if(!class_exists('PLUGINNAME_options')) :
 
 			echo '</td>';
 			echo '</tr>';
-
 		}
 
 		/**
 		 *
 		 * Radio field
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Defaults for radio field
 		 *
@@ -1155,9 +1108,9 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_radio() {
-		
+
 			$args = array(
-				'choices' => array() 
+				'choices' => array()
 			);
 
 			return $args;
@@ -1167,7 +1120,7 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show Radio field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_radio($id, $field) {
@@ -1176,8 +1129,8 @@ if(!class_exists('PLUGINNAME_options')) :
 
 			foreach($field['choices'] as $value => $label) {
 
-				echo '<input class="radio ' . $field['class'] . '" type="radio" name="' . $this->option_group . '[' . $id . ']" id="' . $id . $i . '" value="' . esc_attr($value) . '" ' . checked($this->options[$id], $value, FALSE) . ' ' . ($field['disabled'] ? 'disabled=true' : '') . '><label for="' . $id . $i . '">'.$label.'</label>';
-				
+				echo '<input class="radio '.$field['class'].'" type="radio" name="'.$this->option_group.'['.$id.']" id="'.$id.$i.'" value="'.esc_attr($value).'" '.checked($this->options[$id], $value, FALSE).' '.($field['disabled'] ? 'disabled=true' : '').'><label for="'.$id.$i.'">'.$label.'</label>';
+
 				if($i < count($field['choices']) - 1) {
 					echo '<br />';
 				}
@@ -1189,9 +1142,9 @@ if(!class_exists('PLUGINNAME_options')) :
 		/**
 		 *
 		 * Select field
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Defaults for select field
 		 *
@@ -1199,9 +1152,9 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_select() {
-		
+
 			$args = array(
-				'choices' => array() 
+				'choices' => array()
 			);
 
 			return $args;
@@ -1211,15 +1164,15 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show Select field.
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_select($id, $field, $subfield_id = null) {
+		private function show_field_select($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox ' . $field['class'] . '" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-value="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '>';
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-selectbox '.$field['class'].'" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-value="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" '.($field['disabled'] ? 'disabled="true"' : '').'>';
 
 			foreach($field['choices'] as $value => $label) {
-				echo '<div data-value="' . esc_attr($value) . '"' . selected($this->options[$id], $value, FALSE) . '>' . $label . '</div>';
+				echo '<div data-value="'.esc_attr($value).'"'.selected($this->options[$id], $value, FALSE).'>'.$label.'</div>';
 			}
 
 			echo '</div>';
@@ -1228,9 +1181,9 @@ if(!class_exists('PLUGINNAME_options')) :
 		/**
 		 *
 		 * Number / slider / date / time fields
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Defaults for number field
 		 *
@@ -1238,10 +1191,10 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_number() {
-		
+
 			$args = array(
-				'min'	=> 0,
-				'max'	=> null
+				'min' => 0,
+				'max' => NULL
 			);
 
 			return $args;
@@ -1251,13 +1204,12 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show Number field.
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_number($id, $field, $subfield_id = null) {
+		private function show_field_number($id, $field, $subfield_id = NULL) {
 
-			echo '<input id="' . ($subfield_id ? $subfield_id : $id) . '" type="number" class="select form-control ' . $field['class'] . '" name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" min="' . $field['min'] . '" ' . ($field['max'] ? 'max=' . $field['max'] : '') . ' value="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '>';
-
+			echo '<input id="'.($subfield_id ? $subfield_id : $id).'" type="number" class="select form-control '.$field['class'].'" name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" min="'.$field['min'].'" '.($field['max'] ? 'max='.$field['max'] : '').' value="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" '.($field['disabled'] ? 'disabled="true"' : '').'>';
 		}
 
 		/**
@@ -1265,17 +1217,18 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 * @param mixed $input
 		 *
+		 * @param       $setting
+		 *
+		 * @return mixed|\WP_Error
 		 */
 		public function validate_field_number($input, $setting) {
 
 			if($input < $setting['min']) {
 
-				return new WP_Error('error', __("Number must be greater than or equal to " . $setting['min'] ."."), $input);
+				return new WP_Error('error', __("Number must be greater than or equal to ".$setting['min']."."), $input);
+			} elseif($input > $setting['max'] && $setting['max'] != NULL) {
 
-			} elseif($input > $setting['max'] && $setting['max'] != null) {
-
-				return new WP_Error('error', __("Number must be less than or equal to " . $setting['max'] ."."), $input);
-			
+				return new WP_Error('error', __("Number must be less than or equal to ".$setting['max']."."), $input);
 			} else {
 
 				return $input;
@@ -1289,10 +1242,10 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_slider() {
-		
+
 			$args = array(
-				'min'	=> 0,
-				'max'	=> 100
+				'min' => 0,
+				'max' => 100
 			);
 
 			return $args;
@@ -1302,13 +1255,12 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show Slider field
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_slider($id, $field, $subfield_id = null) {
+		private function show_field_slider($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-slider ' . $field['class'] . '" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-min="' . $field['min'] . '" ' . ($field['max'] ? 'data-max=' . $field['max'] : '') . ' data-value="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '></div>';
-
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-slider '.$field['class'].'" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-min="'.$field['min'].'" '.($field['max'] ? 'data-max='.$field['max'] : '').' data-value="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" '.($field['disabled'] ? 'disabled="true"' : '').'></div>';
 		}
 
 		/**
@@ -1318,12 +1270,12 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_date() {
-		
+
 			$args = array(
-				'date'	=> 'today',
-				'format'=> 'm/d/y',
-				'min'	=> null,
-				'max'	=> null
+				'date'   => 'today',
+				'format' => 'm/d/y',
+				'min'    => NULL,
+				'max'    => NULL
 			);
 
 			return $args;
@@ -1333,13 +1285,12 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show Date field.
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_date($id, $field, $subfield_id = null) {
+		private function show_field_date($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-datepicker ' . $field['class'] . '" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-format="' . $field['format'] . '" data-date="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" data-min="' . $field['min'] . '" data-max="' . $field['max'] . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '></div>';
-
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-datepicker '.$field['class'].'" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-format="'.$field['format'].'" data-date="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" data-min="'.$field['min'].'" data-max="'.$field['max'].'" '.($field['disabled'] ? 'disabled="true"' : '').'></div>';
 		}
 
 		/**
@@ -1349,9 +1300,9 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_time() {
-		
+
 			$args = array(
-				'time'	=> 'now'
+				'time' => 'now'
 			);
 
 			return $args;
@@ -1361,92 +1312,89 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show Time field.
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_time($id, $field, $subfield_id = null) {
+		private function show_field_time($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-timepicker ' . $field['class'] . '" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-time="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '></div>';
-
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-timepicker '.$field['class'].'" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-time="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" '.($field['disabled'] ? 'disabled="true"' : '').'></div>';
 		}
 
 		/**
 		 *
 		 * Hidden field
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Hidden field begin
 		 *
+		 * @param        $id
 		 * @param string $field
 		 *
 		 * @access private
 		 */
 		private function show_field_hidden_begin($id, $field) {
-
 		}
 
 		/**
 		 * Show Hidden field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_hidden($id, $field) {
 
-			echo '<input type="hidden" name="' . $this->option_group . '[' . $id . ']" value="' . $this->options[$id] . '">';
-
+			echo '<input type="hidden" name="'.$this->option_group.'['.$id.']" value="'.$this->options[$id].'">';
 		}
 
 		/**
 		 * Hidden field end
 		 *
+		 * @param        $id
 		 * @param string $field
 		 *
 		 * @access private
 		 */
 		private function show_field_hidden_end($id, $field) {
-
 		}
 
 		/**
 		 *
 		 * Password field
-		 * 
+		 *
 		 */
 
 		/**
 		 * Show password field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_password($id, $field) {
 
-			echo '<input class="form-control ' . $field['class'] . '" type="password" name="' . $this->option_group . '[' . $id . ']" value="' . $this->options[$id] . '" ' . ($field['disabled'] ? 'disabled="true"' : '') . '>';
-
+			echo '<input class="form-control '.$field['class'].'" type="password" name="'.$this->option_group.'['.$id.']" value="'.$this->options[$id].'" '.($field['disabled'] ? 'disabled="true"' : '').'>';
 		}
 
 		/**
 		 *
 		 * Code editor field
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Defaults for code editor field
 		 *
 		 * @return array $args
 		 *
 		 */
-		
+
 		private function default_field_code() {
 			$args = array(
-				'theme'	=> 'default',
-				'lang' 	=> 'php'
+				'theme' => 'default',
+				'lang'  => 'php'
 			);
 			return $args;
 		}
@@ -1455,21 +1403,20 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show code editor field
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_code($id, $field) {
 
-			echo '<textarea id="' . $id . '" class="code_text ' . $field['class'] . '" name="' . $this->option_group . '[' . $id . ']" data-lang="' . $field['lang'] . '" data-theme="' . $field['theme'] . '">' . stripslashes($this->options[$id]) . '</textarea>';
-
+			echo '<textarea id="'.$id.'" class="code_text '.$field['class'].'" name="'.$this->option_group.'['.$id.']" data-lang="'.$field['lang'].'" data-theme="'.$field['theme'].'">'.stripslashes($this->options[$id]).'</textarea>';
 		}
 
 		/**
 		 *
 		 * Font picker fields
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Defaults for font size field
 		 *
@@ -1477,10 +1424,10 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_font_size() {
-		
+
 			$args = array(
-				'min'	=> 12,
-				'max'	=> 72
+				'min' => 12,
+				'max' => 72
 			);
 
 			return $args;
@@ -1490,38 +1437,36 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show font size field
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_font_size($id, $field, $subfield_id = null) {
+		private function show_field_font_size($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox bfh-fontsizes ' . $field['class'] . '"" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-fontsize="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" data-blank="false"></div>';
-		
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-selectbox bfh-fontsizes '.$field['class'].'"" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-fontsize="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" data-blank="false"></div>';
 		}
 
 		/**
 		 * Show font face field
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_font_face($id, $field, $subfield_id = null) {
+		private function show_field_font_face($id, $field, $subfield_id = NULL) {
 
-			echo'<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox bfh-googlefonts ' . $field['class'] . '"" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-font="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '"></div>';
-		
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-selectbox bfh-googlefonts '.$field['class'].'"" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-font="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'"></div>';
 		}
 
 		/**
 		 * Show font weight field
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_font_weight($id, $field, $subfield_id = null) {
+		private function show_field_font_weight($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox ' . $field['class'] . '"" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-value="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '">
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-selectbox '.$field['class'].'"" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-value="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'">
 			  <div data-value="100">100</div>
 			  <div data-value="200">200</div>
 			  <div data-value="300">300</div>
@@ -1532,61 +1477,59 @@ if(!class_exists('PLUGINNAME_options')) :
 			  <div data-value="800">800</div>
 			  <div data-value="900">900</div>
 			</div>';
-
 		}
 
 		/**
 		 * Show font style field
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_font_style($id, $field, $subfield_id = null) {
+		private function show_field_font_style($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox ' . $field['class'] . '"" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-value="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '">
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-selectbox '.$field['class'].'"" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-value="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'">
 			  <div data-value="normal">Normal</div>
 			  <div data-value="italic">Italic</div>
 			</div>';
-
 		}
 
 		/**
 		 * Show color field
 		 *
 		 * @param string $id
-		 * @param array $field
-		 *
+		 * @param array  $field
+		 * @param null   $subfield_id
 		 */
-		private function show_field_color($id, $field, $subfield_id = null) {
+		private function show_field_color($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-colorpicker ' . $field['class'] . '"" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-color="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '" data-close="false"></div>';
-
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-colorpicker '.$field['class'].'"" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-color="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'" data-close="false"></div>';
 		}
 
 		/**
 		 * Validate color field.
 		 *
 		 * @param string $input
-		 * @return string $input
 		 *
+		 * @param        $setting
+		 *
+		 * @return string $input
 		 */
 		public function validate_field_color($input, $setting) {
 
-			if(preg_match('/^#[a-f0-9]{6}$/i', $input)){
+			if(preg_match('/^#[a-f0-9]{6}$/i', $input)) {
 				return $input;
 			} else {
 				return new WP_Error('error', __("Invalid color code."), $input);
 			}
-
 		}
 
 		/**
 		 *
 		 * Location fields
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Defaults for state field
 		 *
@@ -1594,25 +1537,28 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_state() {
-		
+
 			$args = array(
 				'country' => 'US'
 			);
 
 			return $args;
 		}
-		
+
 		/**
 		 * Show state field
 		 *
-		 * @param string $input
-		 * @return string $input
+		 * @param      $id
+		 * @param      $field
+		 * @param null $subfield_id
 		 *
+		 * @internal param string $input
+		 *
+		 * @return string $input
 		 */
-		private function show_field_state($id, $field, $subfield_id = null) {
+		private function show_field_state($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox bfh-states ' . $field['class'] . '"" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-country="' . $field['country'] . '" data-state="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '"></div>';
-
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-selectbox bfh-states '.$field['class'].'"" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-country="'.$field['country'].'" data-state="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'"></div>';
 		}
 
 		/**
@@ -1622,7 +1568,7 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_country() {
-		
+
 			$args = array(
 				'country' => 'US'
 			);
@@ -1633,20 +1579,23 @@ if(!class_exists('PLUGINNAME_options')) :
 		/**
 		 * Show country field
 		 *
-		 * @param string $input
-		 * @return string $input
+		 * @param      $id
+		 * @param      $field
+		 * @param null $subfield_id
 		 *
+		 * @internal param string $input
+		 *
+		 * @return string $input
 		 */
-		private function show_field_country($id, $field, $subfield_id = null) {
+		private function show_field_country($id, $field, $subfield_id = NULL) {
 
-			echo '<div id="' . ($subfield_id ? $subfield_id : $id) . '" class="bfh-selectbox bfh-countries ' . $field['class'] . '"" data-name="' . $this->option_group . '[' . $id . ']' . ($subfield_id ? '[' . $subfield_id . ']' : '') . '" data-flags="true" data-country="' . ($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]) . '"></div>';
-
+			echo '<div id="'.($subfield_id ? $subfield_id : $id).'" class="bfh-selectbox bfh-countries '.$field['class'].'"" data-name="'.$this->option_group.'['.$id.']'.($subfield_id ? '['.$subfield_id.']' : '').'" data-flags="true" data-country="'.($subfield_id ? $this->options[$id][$subfield_id] : $this->options[$id]).'"></div>';
 		}
 
 		/**
 		 *
 		 * File upload field and utility functions
-		 * 
+		 *
 		 */
 
 		/**
@@ -1666,11 +1615,11 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_file() {
-		
+
 			$args = array(
-				'layout' 	=> 'standard',
-				'width'		=> 150,
-				'height'	=> 150
+				'layout' => 'standard',
+				'width'  => 150,
+				'height' => 150
 			);
 
 			return $args;
@@ -1679,46 +1628,47 @@ if(!class_exists('PLUGINNAME_options')) :
 		/**
 		 * Show file field
 		 *
-		 * @param string $input
-		 * @return string $input
+		 * @param $id
+		 * @param $field
 		 *
+		 * @internal param string $input
+		 *
+		 * @return string $input
 		 */
 		private function show_field_file($id, $field) {
 
 			if($field['layout'] == 'image') {
 
-				echo '<div class="fileinput fileinput-field fileinput-image ' . (isset($this->options[$id]) && $this->options[$id] != "" ? 'fileinput-exists' : 'fileinput-new') . '" data-provides="fileinput">
-				  <div class="fileinput-new thumbnail" style="width: ' . $field['width'] . 'px; height: ' . $field['height'] . 'px;">
-				    <img data-src="' . $this->selfpath . 'js/holder.js/' . $field['width'] . 'x' . $field['height'] . '">
+				echo '<div class="fileinput fileinput-field fileinput-image '.(isset($this->options[$id]) && $this->options[$id] != "" ? 'fileinput-exists' : 'fileinput-new').'" data-provides="fileinput">
+				  <div class="fileinput-new thumbnail" style="width: '.$field['width'].'px; height: '.$field['height'].'px;">
+				    <img data-src="'.$this->selfpath.'js/holder.js/'.$field['width'].'x'.$field['height'].'">
 				  </div>
-				  <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: ' . $field['width'] . 'px; max-height: ' . $field['height'] . 'px;">
-				  ' . (isset($this->options[$id]) && $this->options[$id] != "" ? '<img src="' . $this->options[$id] . '">' : '') . '
+				  <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: '.$field['width'].'px; max-height: '.$field['height'].'px;">
+				  '.(isset($this->options[$id]) && $this->options[$id] != "" ? '<img src="'.$this->options[$id].'">' : '').'
 				  </div>
 				  <div>
-				    <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span class="fileinput-exists">Change</span><input class="fileinput-input" type="text" value="' . $this->options[$id] . '" name="' . $this->option_group . '[' . $id . ']"></span>
+				    <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span class="fileinput-exists">Change</span><input class="fileinput-input" type="text" value="'.$this->options[$id].'" name="'.$this->option_group.'['.$id.']"></span>
 				    <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
 				  </div>
 				</div>';
-
 			} else {
 
-				echo '<div id="' . $id . '" class="fileinput fileinput-field fileinput-file' . (isset($this->options[$id]) && $this->options[$id] != "" ? 'fileinput-exists' : 'fileinput-new') . '" data-provides="fileinput">
+				echo '<div id="'.$id.'" class="fileinput fileinput-field fileinput-file'.(isset($this->options[$id]) && $this->options[$id] != "" ? 'fileinput-exists' : 'fileinput-new').'" data-provides="fileinput">
 				  <div class="input-group">
-				    <div class="form-control uneditable-input span3" data-trigger="fileinput"><i class="fa fa-file-o fileinput-exists"></i> <span class="fileinput-filename">' . basename($this->options[$id]) . '</span></div>
-				    <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input class="fileinput-input" type="text" value="' . $this->options[$id] . '" name="' . $this->option_group . '[' . $id . ']"></span>
+				    <div class="form-control uneditable-input span3" data-trigger="fileinput"><i class="fa fa-file-o fileinput-exists"></i> <span class="fileinput-filename">'.basename($this->options[$id]).'</span></div>
+				    <span class="input-group-addon btn btn-default btn-file"><span class="fileinput-new">Select file</span><span class="fileinput-exists">Change</span><input class="fileinput-input" type="text" value="'.$this->options[$id].'" name="'.$this->option_group.'['.$id.']"></span>
 				    <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
 				  </div>
 				</div>';
-
 			}
 		}
 
 		/**
 		 *
 		 * WYSIWYG editor field
-		 * 
+		 *
 		 */
-		
+
 		/**
 		 * Defaults for editor field
 		 *
@@ -1726,12 +1676,12 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 */
 		private function default_field_editor() {
-		
+
 			$args = array(
-				'media_buttons' => true,
-				'wpautop'		=> true,
-				'textarea_rows'	=> get_option('default_post_edit_rows', 10),
-				'editor_css'	=> ''
+				'media_buttons' => TRUE,
+				'wpautop'       => TRUE,
+				'textarea_rows' => get_option('default_post_edit_rows', 10),
+				'editor_css'    => ''
 			);
 
 			return $args;
@@ -1741,44 +1691,43 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show editor field
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
-		
+
 		private function show_field_editor($id, $field) {
 
 			$settings = array(
-				'editor_class' => 'at-wysiwyg ' . $field['class'],
-				'textarea_name' => $this->option_group . '[' . $id . ']',
+				'editor_class'  => 'at-wysiwyg '.$field['class'],
+				'textarea_name' => $this->option_group.'['.$id.']',
 				'media_buttons' => $field['media_buttons'],
-				'wpautop'		=> $field['wpautop'],
-				'textarea_rows'	=> $field['textarea_rows'],
-				'editor_css'	=> $field['editor_css']
+				'wpautop'       => $field['wpautop'],
+				'textarea_rows' => $field['textarea_rows'],
+				'editor_css'    => $field['editor_css']
 			);
 
 			wp_editor(stripslashes(stripslashes(html_entity_decode($this->options[$id]))), $id, $settings);
-
 		}
 
 		/**
 		 *
 		 * Import, export, and utility functions
-		 * 
+		 *
 		 */
 
 		/**
 		 * Show export field
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 
 		private function show_field_export($id, $field) {
 
-			$nonce = wp_create_nonce( 'export-options' );
+			$nonce = wp_create_nonce('export-options');
 
-			echo '<a id="' . $id . '" class="button button-default" href="' . admin_url( 'admin-post.php?action=export&option_group=' . $this->option_group . '&_wpnonce=' . $nonce ) . '" >Download Export</a>';
+			echo '<a id="'.$id.'" class="button button-default" href="'.admin_url('admin-post.php?action=export&option_group='.$this->option_group.'&_wpnonce='.$nonce).'" >Download Export</a>';
 		}
 
 		/**
@@ -1821,24 +1770,25 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Show import field
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 
 		private function show_field_import($id, $field) {
 
-			echo '<textarea class="form-control ' . $field['class'] . '" id="' . $id . '" name="' . $this->option_group . '[' . $id . ']" placeholder="' . $field['std'] . '" rows="3" cols="39" ' . ($field['disabled'] ? 'disabled="true"' : '') . '>' . wp_htmledit_pre($this->options[$id]) . '</textarea>';
-
+			echo '<textarea class="form-control '.$field['class'].'" id="'.$id.'" name="'.$this->option_group.'['.$id.']" placeholder="'.$field['std'].'" rows="3" cols="39" '.($field['disabled'] ? 'disabled="true"' : '').'>'.wp_htmledit_pre($this->options[$id]).'</textarea>';
 		}
 
 		/**
 		 * Validate import field.
 		 *
 		 * @param string $input
-		 * @return string $input
 		 *
+		 * @param        $setting
+		 *
+		 * @return string $input
 		 */
-		
+
 		public function validate_field_import($input, $setting) {
 
 			$import_code = unserialize(base64_decode($input));
@@ -1847,36 +1797,33 @@ if(!class_exists('PLUGINNAME_options')) :
 
 				update_option($this->option_group, $import_code);
 				$this->options = $import_code;
-				$this->settings_imported = true;
+				$this->settings_imported = TRUE;
 
-				return true;
-
+				return TRUE;
 			} else {
 
 				return new WP_Error('error', __("Error importing settings. Check your import file and try again."));
-
 			}
-
 		}
 
 		/**
 		 *
 		 * Reset options field
-		 * 
+		 *
 		 */
 
 		/**
 		 * Show Reset field.
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 */
 		private function show_field_reset($id, $field) {
-			echo '<input class="checkbox warning ' . $field['class'] . '" type="checkbox" id="' . $id . '" name="' . $this->option_group . '[' . $id . ']" value="1" '.checked($this->options[$id], 1, FALSE).' />';
-			
+			echo '<input class="checkbox warning '.$field['class'].'" type="checkbox" id="'.$id.'" name="'.$this->option_group.'['.$id.']" value="1" '.checked($this->options[$id], 1, FALSE).' />';
+
 			if($field['desc'] != '') {
-				echo '<label for="' . $id . '">' . $field['desc'] . '</label>';
+				echo '<label for="'.$id.'">'.$field['desc'].'</label>';
 			}
 		}
 
@@ -1884,7 +1831,7 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Reset field end
 		 *
 		 * @param string $id
-		 * @param array $field
+		 * @param array  $field
 		 *
 		 * @access private
 		 */
@@ -1892,33 +1839,31 @@ if(!class_exists('PLUGINNAME_options')) :
 
 			echo '</td>';
 			echo '</tr>';
-
 		}
 
 		/**
 		 * Validates input field
-		 * 
+		 *
 		 * @param  bool $input
+		 *
+		 * @param       $setting
+		 *
 		 * @return bool $input
-		 * 
 		 */
 		public function validate_field_reset($input, $setting) {
 
 			if(isset($input)) {
-				$this->reset_options = true;
+				$this->reset_options = TRUE;
 			}
 
 			return $input;
-
 		}
-
 
 		/**
 		 *
 		 * DEPRECATED functions from previous version, still to be integrated
-		 * 
+		 *
 		 */
-
 
 		/**
 		 * Process img added to meta field.
@@ -1954,7 +1899,7 @@ if(!class_exists('PLUGINNAME_options')) :
 				$li .= "</li>";
 				$html .= $li;
 			} // End For Each
-			return media_send_to_editor($html);
+			media_send_to_editor($html);
 		}
 
 		/**
@@ -2231,8 +2176,6 @@ if(!class_exists('PLUGINNAME_options')) :
 			echo '<h3>'.$field['value'].'</h3>';
 		}
 
-
-
 		/**
 		 * Show conditional Checkbox field.
 		 *
@@ -2389,7 +2332,7 @@ if(!class_exists('PLUGINNAME_options')) :
 			}
 			$html = '<select class="at-typography at-typography-size" name="'.esc_attr($field['id'].'[size]').'" id="'.esc_attr($field['id'].'_size').'">';
 			$op = '';
-			for($i = 16; $i < 200; $i=$i+8) {
+			for($i = 16; $i < 200; $i = $i + 8) {
 				$size = $i.'px';
 				$op .= '<option value="'.esc_attr($size).'">'.esc_html($size).'</option>';
 			}
@@ -2459,6 +2402,7 @@ if(!class_exists('PLUGINNAME_options')) :
 			echo implode('<br />', $html);
 			$this->show_field_end($field, $meta);
 		}
+
 		/**
 		 * Show Posts field.
 		 * used creating a posts/pages/custom types checkboxlist or a select dropdown
@@ -2624,10 +2568,10 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * @param $id       string field id, i.e. the meta key
 		 * @param $options  (array)  array of key => value pairs for sortable options  as value => label
 		 * @param $args     mixed|array
-		 *    'name' => // field name/label string optional
-		 *    'desc' => // field description, string optional
-		 *    'std' => // default value, (array) optional
-		 *    'validation_function' => // validate function, string optional
+		 *                  'name' => // field name/label string optional
+		 *                  'desc' => // field description, string optional
+		 *                  'std' => // default value, (array) optional
+		 *                  'validation_function' => // validate function, string optional
 		 * @param $repeater bool  is this a field inside a repeater? true|false(default)
 		 *
 		 * @return array
@@ -2660,14 +2604,14 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 * @param $id       string  field id, i.e. the meta key
 		 * @param $options  mixed|array options of taxonomy field
-		 *    'taxonomy' =>    // taxonomy name can be category,post_tag or any custom taxonomy default is category
-		 *    'type' =>  // how to show taxonomy? 'select' (default) or 'checkbox_list'
-		 *    'args' =>  // arguments to query taxonomy, see http://goo.gl/uAANN default ('hide_empty' => false)
+		 *                  'taxonomy' =>    // taxonomy name can be category,post_tag or any custom taxonomy default is category
+		 *                  'type' =>  // how to show taxonomy? 'select' (default) or 'checkbox_list'
+		 *                  'args' =>  // arguments to query taxonomy, see http://goo.gl/uAANN default ('hide_empty' => false)
 		 * @param $args     mixed|array
-		 *    'name' => // field name/label string optional
-		 *    'desc' => // field description, string optional
-		 *    'std' => // default value, string optional
-		 *    'validation_function' => // validate function, string optional
+		 *                  'name' => // field name/label string optional
+		 *                  'desc' => // field description, string optional
+		 *                  'std' => // default value, string optional
+		 *                  'validation_function' => // validate function, string optional
 		 * @param $repeater bool  is this a field inside a repeater? true|false(default)
 		 *
 		 * @return array
@@ -2702,12 +2646,12 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 * @param $id       string  field id, i.e. the meta key
 		 * @param $options  mixed|array options of taxonomy field
-		 *    'type' =>  // how to show taxonomy? 'select' (default) or 'checkbox_list'
+		 *                  'type' =>  // how to show taxonomy? 'select' (default) or 'checkbox_list'
 		 * @param $args     mixed|array
-		 *    'name' => // field name/label string optional
-		 *    'desc' => // field description, string optional
-		 *    'std' => // default value, string optional
-		 *    'validation_function' => // validate function, string optional
+		 *                  'name' => // field name/label string optional
+		 *                  'desc' => // field description, string optional
+		 *                  'std' => // default value, string optional
+		 *                  'validation_function' => // validate function, string optional
 		 * @param $repeater bool  is this a field inside a repeater? true|false(default)
 		 *
 		 * @return array
@@ -2740,14 +2684,14 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 * @param $id       string  field id, i.e. the meta key
 		 * @param $options  mixed|array options of taxonomy field
-		 *    'post_type' =>    // post type name, 'post' (default) 'page' or any custom post type
+		 *                  'post_type' =>    // post type name, 'post' (default) 'page' or any custom post type
 		 *                  type' =>  // how to show posts? 'select' (default) or 'checkbox_list'
 		 *                  args' =>  // arguments to query posts, see http://goo.gl/is0yK default ('posts_per_page' => -1)
 		 * @param $args     mixed|array
-		 *    'name' => // field name/label string optional
-		 *    'desc' => // field description, string optional
-		 *    'std' => // default value, string optional
-		 *    'validation_function' => // validate function, string optional
+		 *                  'name' => // field name/label string optional
+		 *                  'desc' => // field description, string optional
+		 *                  'std' => // default value, string optional
+		 *                  'validation_function' => // validate function, string optional
 		 * @param $repeater bool  is this a field inside a repeater? true|false(default)
 		 *
 		 * @return array
@@ -2780,12 +2724,12 @@ if(!class_exists('PLUGINNAME_options')) :
 		 *
 		 * @param $id   string  field id, i.e. the meta key
 		 * @param $args mixed|array
-		 *    'name' => // field name/label string optional
-		 *    'desc' => // field description, string optional
-		 *    'std' => // default value, string optional
-		 *    'style' =>   // custom style for field, string optional
-		 *    'validation_function' => // validate function, string optional
-		 *    'fields' => //fields to repeater
+		 *              'name' => // field name/label string optional
+		 *              'desc' => // field description, string optional
+		 *              'std' => // default value, string optional
+		 *              'style' =>   // custom style for field, string optional
+		 *              'validation_function' => // validate function, string optional
+		 *              'fields' => //fields to repeater
 		 *
 		 * @modified 0.4 added sortable option
 		 */
@@ -2806,7 +2750,6 @@ if(!class_exists('PLUGINNAME_options')) :
 		 * Response JSON
 		 * Get json date from url and decode.
 		 */
-
 		public function json_response($url) {
 
 			// Parse the given url
@@ -2815,7 +2758,6 @@ if(!class_exists('PLUGINNAME_options')) :
 
 			return $decoded;
 		}
-
 
 		public function Handle_plupload_action() {
 			// check ajax nonce
