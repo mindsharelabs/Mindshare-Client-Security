@@ -30,44 +30,8 @@ if(!class_exists('mcms_ui')) :
 				#footer, #footer-upgrade, #favorite-actions, #footer-left, #acx_plugin_dashboard_widget, #blogplay_db_widget, #yoast_posts, #yst_db_widget, #dashboard_op, #header-logo, #wpgeo_dashboard, #dashboard_secondary, #dashboard_primary, #dashboard_quick_press, #dashboard_recent_comments, #dashboard_plugins, #dashboard_right_now, #fluency-footer, #wp-admin-bar-wp-logo, #tab-link-help-content, #tab-panel-help-content, #wp-admin-bar-new-content, #welcome-panel, label[for^='wp_welcome_panel'], #blc-more-plugins-link-wrap {
 					display:none !important;
 				}
-				/*#wpbody-content .wrap h2 a {
-					color:#000000 !important;
-				}*/
 			</style>
 
-			<script type='text/javascript'>
-				/*jQuery(function() {
-
-					// wp geo
-					jQuery('#wpgeo_location h3.hndle span').html('<span>Location (add geographic metadata to this page)</span>');
-					jQuery('li#menu-settings div.wp-submenu li a:contains("WP Geo")').html('Geo Location Settings');
-					jQuery('div#wpbody-content h2:contains("WP Geo Settings")').html('Geo Location Settings');
-					jQuery('div.metabox-prefs label[for*="wpgeo_dashboard"]').remove();
-					jQuery('div.metabox-prefs label:contains("WP Geo Location")').html("<input id='wpgeo_location-hide' class='hide-postbox-tog' type='checkbox' checked='checked' value='wpgeo_location' name='wpgeo_location-hide'/>Geo Location");
-
-					// wpgeo_dashboard
-					jQuery('#wpgeo_dashboard').remove();
-					jQuery('#footer').remove();
-					jQuery('#screen-meta #contextual-help-link-wrap').remove();
-
-					// dashboard
-					jQuery('#dashboard_right_now').remove();
-					jQuery('#dashboard_plugins').remove();
-					jQuery('#dashboard_recent_comments').remove();
-					jQuery('#dashboard_quick_press').remove();
-					jQuery('#dashboard_primary').remove();
-					jQuery('#dashboard_secondary').remove();
-
-					// pressthis
-					jQuery('div.tool-box:contains(\'Press This\')').remove();
-
-					// profile page tweaks
-					jQuery('tr:contains(\'Admin Color Scheme\')').remove();
-					jQuery('tr.show-admin-bar').remove();
-					jQuery('tr:contains(\'Keyboard Shortcuts\')').remove();
-
-				});*/
-			</script>
 		<?php
 		}
 
@@ -131,6 +95,25 @@ if(!class_exists('mcms_ui')) :
 		}
 
 		/**
+		 * Add all custom post types to the "Right Now" box on the Dashboard
+		 *
+		 */
+		public function custom_rightnow() {
+			$post_types = get_post_types(array('show_in_nav_menus' => TRUE, '_builtin' => FALSE), 'objects');
+			foreach($post_types as $post_type => $post_type_obj) {
+				$num_posts = wp_count_posts($post_type);
+				if($num_posts && $num_posts->publish) {
+					printf(
+						'<li class="%1$s-count"><a href="edit.php?post_type=%1$s">%2$s %3$s</a></li>',
+						$post_type,
+						number_format_i18n($num_posts->publish),
+						$post_type_obj->label
+					);
+				}
+			}
+		}
+
+		/**
 		 * Custom Admin Menus
 		 *
 		 */
@@ -154,7 +137,7 @@ if(!class_exists('mcms_ui')) :
 					array(
 						 'parent' => 'mcms',
 						 'title'  => 'WordPress Security &amp; Backup Service',
-						 'id'    => 'mcms-security-service',
+						 'id'     => 'mcms-security-service',
 						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/?ref='.get_bloginfo('url'),
 						 'meta'   => array('target' => '_blank')
 					)
@@ -165,7 +148,7 @@ if(!class_exists('mcms_ui')) :
 				array(
 					 'parent' => 'mcms',
 					 'title'  => 'View Hosting Status Updates',
-					 'id'    => 'mcms-updates',
+					 'id'     => 'mcms-updates',
 					 'href'   => 'http://mindsharestatus.wordpress.com',
 					 'meta'   => array('target' => '_blank')
 				)
@@ -176,7 +159,7 @@ if(!class_exists('mcms_ui')) :
 					array(
 						 'parent' => 'mcms',
 						 'title'  => 'View Realtime Server Performance',
-						 'id'    => 'mcms-performance',
+						 'id'     => 'mcms-performance',
 						 'href'   => 'http://mind.sh/are/server/?ref='.get_bloginfo('url'),
 						 'meta'   => array('target' => '_blank')
 					)
@@ -187,7 +170,7 @@ if(!class_exists('mcms_ui')) :
 				array(
 					 'parent' => 'mcms',
 					 'title'  => 'Report an Outage or Emergency',
-					 'id'    => 'mcms-emergency',
+					 'id'     => 'mcms-emergency',
 					 'href'   => 'http://mind.sh/are/emergency/?ref='.get_bloginfo('url'),
 					 'meta'   => array('target' => '_blank')
 				));
@@ -196,7 +179,7 @@ if(!class_exists('mcms_ui')) :
 				array(
 					 'parent' => 'mcms',
 					 'title'  => 'Contact Mindshare Studios',
-					 'id'    => 'mcms-contact',
+					 'id'     => 'mcms-contact',
 					 'href'   => 'http://mind.sh/are/contact/?ref='.get_bloginfo('url'),
 					 'meta'   => array('target' => '_blank')
 				));
@@ -217,7 +200,10 @@ if(!class_exists('mcms_ui')) :
 				$wp_admin_bar->add_menu(
 					array(
 						 'title' => 'Security <span style="color:#FF0000;">OFF</span>',
-						 'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array('http://','https://'), '', get_home_url()),
+						 'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+																																											  'http://',
+																																											  'https://'
+																																										 ), '', get_home_url()),
 						 'id'    => 'mcms-security',
 						 'meta'  => array(
 							 'title'  => 'Security &amp; Backup Service is NOT enabled for your domain '.get_bloginfo('url').' (click for more information)',
@@ -229,8 +215,11 @@ if(!class_exists('mcms_ui')) :
 					array(
 						 'parent' => 'mcms-security',
 						 'title'  => '<span style="text-shadow:none;color:#FF0000;font-weight:700">Security &amp; Backups are not enabled.</span> Learn more &rsaquo;',
-						 'id'    => 'mcms-security-sale',
-						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array('http://','https://'), '', get_home_url()),
+						 'id'     => 'mcms-security-sale',
+						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+																																											   'http://',
+																																											   'https://'
+																																										  ), '', get_home_url()),
 						 'meta'   => array('target' => '_blank', 'title' => 'Learn more >')
 					)
 				);
@@ -238,8 +227,11 @@ if(!class_exists('mcms_ui')) :
 					array(
 						 'parent' => 'mcms-security',
 						 'title'  => '<span>Protect your website now for <span style="color:#00CC00;">$9.95</span>/month (regularly $14.95)</span>',
-						 'id'    => 'mcms-security-sale2',
-						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array('http://','https://'), '', get_home_url()),
+						 'id'     => 'mcms-security-sale2',
+						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+																																											   'http://',
+																																											   'https://'
+																																										  ), '', get_home_url()),
 						 'meta'   => array('title' => 'On sale for a limited time >', 'target' => '_blank')
 					)
 				);
@@ -307,33 +299,8 @@ if(!class_exists('mcms_ui')) :
 		public static function options_page() {
 			$user = wp_get_current_user();
 
-			
 			if(in_array($user->ID, self::admin_list())) {
 				require_once(MCMS_ADMIN_PATH."views/mindshare-admin-options.php");
-				//require_once(MCMS_ADMIN_PATH."lib/mindshare-options-framework/mindshare-options-framework.php");
-
-				/*$config = array(
-					'menu'             => 'settings', //sub page to settings page
-					'page_title'       => 'Mindshare Default Settings', //The name of this page
-					'menu_title'       => 'Mindshare Defaults', // text to use on the menu link
-					'capability'       => 'manage_options', // The capability needed to view the page
-					'option_group'     => 'mindshare_admin_options', //the name of the option to create in the database
-					'id'               => sanitize_title(MCMS_PLUGIN_NAME), // meta box id, unique per page
-					'fields'           => array(), // list of fields (can be added by field arrays)
-					'project_path'     => 'PLUGIN', // 'THEME', 'PLUGIN', or custom path string, default is 'PLUGIN'
-					'project_name'     => MCMS_PLUGIN_NAME, // Used for customizing text for the uninstall confirmation. Defaults to 'this'
-					'google_fonts'     => FALSE,
-					'reset_button'     => FALSE,
-					'uninstall_button' => TRUE
-				);
-				$options_panel = new mindshare_options_framework($config);
-				$options_panel->OpenTabs_container('');
-				$options_panel->TabsListing(array('links' => array('options_1' => 'Default Settings')));
-				$options_panel->OpenTab('options_1');
-				$options_panel->addCheckbox('mcms_load_defaults', array('name' => 'Load Mindshare default WordPress options?', 'std' => FALSE));
-				$options_panel->addParagraph('This feature initializes WordPress with some default settings (such as comment blacklist words, permalink structure, reading options, etc). It is meant to save a little time when setting up new WordPress installs <strong>ONLY</strong>.');
-				$options_panel->addSubtitle('This sets the following WordPress settings:');
-				*/
 			}
 		}
 	}

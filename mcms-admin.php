@@ -4,7 +4,7 @@
  Plugin URI: http://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites.
  Author: Mindshare Studios, Inc
- Version: 3.7
+ Version: 3.7.1
  Author URI: http://mind.sh/are/
  */
 
@@ -17,6 +17,7 @@
 
  Changelog:
  
+	 3.7.1 - critical bugfix
 	 3.7 - switch to EDD, Options for WordPress, updates for WP 3.8, moved to Git, improved htaccess rules
 	 3.6.3 - minor changes, remove tri.be widget, made .htaccess defaults more conservative, code cleanup
 	 3.6.1&2 - updated externals
@@ -35,12 +36,12 @@
 	 3.3.9.3 - removed blc more link
 	 3.3.9.2 - removed permissions check
 	 3.3.9.1 - bugfix for ACF
-	 3.3.9 - disbable admin email override entirely bdue to form plugin issues (formiddable, cf7)
+	 3.3.9 - disable admin email override entirely due to form plugin issues (formidable, cf7)
 	 3.3.8 - disabled manageWP API, minor updates
 	 3.3.7 - major reorganization & cleanup
 	 3.3.6 - added fix for contact-form-7 plugin
 	 3.3.5 - added auto update mechanism 
-	 3.3.4 - added secuirty service indicator and check
+	 3.3.4 - added security service indicator and check
 	 3.3.3 - added GetSupport menu to wp_admin_bar
 	 3.3.2 - added support for manageWP API (sort of... doesn't seem to be working)
 	 3.3.1 - bugfix
@@ -103,12 +104,11 @@ if(!defined('GF_LICENSE_KEY')) {
 // EDD updater
 if(!class_exists('Mindshare_API_Plugin_Updater')) {
 	// load our custom updater
-	include_once(MCMS_ADMIN_PATH.'/lib/Mindshare_Security_Plugin_Updater.php');
+	include_once(MCMS_ADMIN_PATH.'lib/Mindshare_Security_Plugin_Updater.php');
 }
 
-if(is_admin()) {
+if(!class_exists('mindshare_admin_options')) {
 	require_once(MCMS_ADMIN_PATH.'lib/options/options.php'); // include options framework
-	//require_once(MCMS_ADMIN_PATH.'views/mindshare-admin-options.php'); // include options config file
 }
 
 if(!class_exists('mcms_admin')) :
@@ -127,7 +127,7 @@ if(!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7';
+		private $class_version = '3.7.1';
 
 		/**
 		 * Used for automatic updates
@@ -148,6 +148,7 @@ if(!class_exists('mcms_admin')) :
 			add_action('admin_head', array('mcms_ui', 'admin_head'));
 			add_action('admin_menu', array('mcms_ui', 'clear_dashboard'));
 			add_action('admin_bar_menu', array('mcms_ui', 'admin_bar_menu'));
+			add_action('dashboard_glance_items', array('mcms_ui', 'custom_rightnow'));
 			add_action('pre_user_query', array('mcms_ui', 'user_list'));
 			add_action('plugins_loaded', array('mcms_ui', 'options_page'));
 			add_action('wp_dashboard_setup', array('mcms_ui', 'register_dashboard_widget'));
@@ -187,8 +188,6 @@ if(!class_exists('mcms_admin')) :
 				}
 			}
 		}
-
-
 
 		/**
 		 * Check for available updates
