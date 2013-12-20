@@ -2,7 +2,7 @@
 /**
  * The Mindshare Options Framework is a flexible, lightweight framework for creating WordPress theme and plugin options screens.
  *
- * @version        2.1
+ * @version        2.1.1
  * @author         Mindshare Studios, Inc.
  * @copyright      Copyright (c) 2013
  * @link           http://www.mindsharelabs.com/documentation/
@@ -21,6 +21,7 @@
  *
  * Changelog:
  *
+ * 2.1.1 - Minor bugfix
  * 2.1 - Added import / export, refactored pages and sections, bugfixes
  * 2.0 - Major refactor in prep for public release
  * 0.3.4 - some refactoring, styling for checkbox lists
@@ -43,7 +44,7 @@ if(!class_exists('mindshare_admin_options')) :
 		 *
 		 * @var string
 		 */
-		private $version = '2.1';
+		private $version = '2.1.1';
 
 		private $option_group, $setup, $settings, $sections;
 
@@ -116,9 +117,11 @@ if(!class_exists('mindshare_admin_options')) :
 		 * @param array $setup    Contains the universal project setup parameters
 		 * @param array $settings Contains all of the settings fields and their assigned section
 		 * @param array $sections Contains the various sections (pages and tabs) and their relationships
-		 * @param array $subpages (optional) Contains subpages to be generated off of the main page if a top-level menus is being created
+		 * @param null  $pages
 		 *
-		 * @return null
+		 * @internal param array $subpages (optional) Contains subpages to be generated off of the main page if a top-level menus is being created
+		 *
+		 * @return \mindshare_admin_options
 		 */
 		public function __construct($setup, $settings, $sections = NULL, $pages = NULL) {
 
@@ -141,7 +144,7 @@ if(!class_exists('mindshare_admin_options')) :
 			// If we're exporting options, prepare and deliver the export file
 			add_action('admin_post_export', array($this, 'download_export'));
 
-			if(isset($_POST['action']) && $_POST['action'] == 'update') {
+			if(isset($_POST['action']) && $_POST['action'] == 'update' && isset($_POST[$this->setup['project_slug'].'_nonce'])) {
 				$this->save_options();
 			}
 
@@ -172,7 +175,11 @@ if(!class_exists('mindshare_admin_options')) :
 			}
 
 			// Get array of form data
-			$input = $_POST[$this->option_group];
+			if (array_key_exists($this->option_group, $_POST)) {
+				$input = $_POST[$this->option_group];
+			} else {
+				$input = array();
+			}
 
 			// For each settings field, run the input through it's defined validation function
 			$settings = $this->settings;
