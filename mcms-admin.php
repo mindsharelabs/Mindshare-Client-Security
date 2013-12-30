@@ -4,7 +4,7 @@
  Plugin URI: http://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites.
  Author: Mindshare Studios, Inc
- Version: 3.7.1
+ Version: 3.7.2
  Author URI: http://mind.sh/are/
  */
 
@@ -17,6 +17,7 @@
 
  Changelog:
  
+	 3.7.2 - temp disable EDD
 	 3.7.1 - critical bugfix
 	 3.7 - switch to EDD, Options for WordPress, updates for WP 3.8, moved to Git, improved htaccess rules
 	 3.6.3 - minor changes, remove tri.be widget, made .htaccess defaults more conservative, code cleanup
@@ -127,7 +128,7 @@ if(!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7.1';
+		private $class_version = '3.7.2';
 
 		/**
 		 * Used for automatic updates
@@ -154,7 +155,7 @@ if(!class_exists('mcms_admin')) :
 			add_action('wp_dashboard_setup', array('mcms_ui', 'register_dashboard_widget'));
 			add_filter('all_plugins', array('mcms_ui', 'plugin_replace'));
 
-			add_action('admin_init', array($this, 'check_update'));
+			//add_action('admin_init', array($this, 'check_update'));
 			register_activation_hook(__FILE__, array($this, 'install'));
 		}
 
