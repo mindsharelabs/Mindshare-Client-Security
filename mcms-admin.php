@@ -202,18 +202,6 @@ if(!class_exists('mcms_admin')) :
 
 			// EDD updates are already activated for this site, so exit
 			if($edd_active != 'valid') {
-
-				$mindshare_security_updater = new Mindshare_Security_Plugin_Updater(
-					MCMS_UPDATE_URL,
-					__FILE__,
-					array(
-						'version'   => $this->class_version, // current version number
-						'license'   => $this->license_key,
-						'item_name' => MCMS_PLUGIN_NAME, // name of this plugin
-						'author'    => 'Mindshare Studios, Inc.'
-					)
-				);
-
 				$response = wp_remote_get(
 					add_query_arg(
 						array(
@@ -242,6 +230,17 @@ if(!class_exists('mcms_admin')) :
 					update_option('mcmsadmin_license_status', $license_data->license);
 				}
 			}
+
+			$mindshare_security_updater = new Mindshare_Security_Plugin_Updater(
+				MCMS_UPDATE_URL,
+				__FILE__,
+				array(
+					'version'   => $this->class_version, // current version number
+					'license'   => $this->license_key,
+					'item_name' => MCMS_PLUGIN_NAME, // name of this plugin
+					'author'    => 'Mindshare Studios, Inc.'
+				)
+			);
 		}
 
 		/**
