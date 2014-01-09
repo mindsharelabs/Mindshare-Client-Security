@@ -4,7 +4,7 @@
  Plugin URI: http://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites.
  Author: Mindshare Studios, Inc
- Version: 3.7.2
+ Version: 3.7.3
  Author URI: http://mind.sh/are/
  */
 
@@ -17,6 +17,7 @@
 
  Changelog:
  
+	 3.7.3 - re-enable EDD
 	 3.7.2 - temp disable EDD
 	 3.7.1 - critical bugfix
 	 3.7 - switch to EDD, Options for WordPress, updates for WP 3.8, moved to Git, improved htaccess rules
@@ -128,7 +129,7 @@ if(!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7.2';
+		private $class_version = '3.7.3';
 
 		/**
 		 * Used for automatic updates
@@ -155,7 +156,7 @@ if(!class_exists('mcms_admin')) :
 			add_action('wp_dashboard_setup', array('mcms_ui', 'register_dashboard_widget'));
 			add_filter('all_plugins', array('mcms_ui', 'plugin_replace'));
 
-			//add_action('admin_init', array($this, 'check_update'));
+			add_action('admin_init', array($this, 'check_update'));
 			register_activation_hook(__FILE__, array($this, 'install'));
 		}
 
@@ -197,43 +198,49 @@ if(!class_exists('mcms_admin')) :
 
 		public function check_update() {
 
-			$mindshare_security_updater = new Mindshare_Security_Plugin_Updater(
-				MCMS_UPDATE_URL,
-				__FILE__,
-				array(
-					 'version'   => $this->class_version, // current version number
-					 'license'   => $this->license_key,
-					 'item_name' => MCMS_PLUGIN_NAME, // name of this plugin
-					 'author'    => 'Mindshare Studios, Inc.'
-				)
-			);
+			$edd_active = get_option('mcmsadmin_license_status');
 
-			$response = wp_remote_get(
-				add_query_arg(
+			// EDD updates are already activated for this site, so exit
+			if($edd_active != 'valid') {
+
+				$mindshare_security_updater = new Mindshare_Security_Plugin_Updater(
+					MCMS_UPDATE_URL,
+					__FILE__,
 					array(
-						 'edd_action' => 'activate_license',
-						 'license'    => $this->license_key,
-						 'item_name'  => urlencode(MCMS_PLUGIN_NAME) // the name of our product in EDD
+						'version'   => $this->class_version, // current version number
+						'license'   => $this->license_key,
+						'item_name' => MCMS_PLUGIN_NAME, // name of this plugin
+						'author'    => 'Mindshare Studios, Inc.'
+					)
+				);
+
+				$response = wp_remote_get(
+					add_query_arg(
+						array(
+							'edd_action' => 'activate_license',
+							'license'    => $this->license_key,
+							'item_name'  => urlencode(MCMS_PLUGIN_NAME) // the name of our product in EDD
+						),
+						MCMS_UPDATE_URL
 					),
-					MCMS_UPDATE_URL
-				),
-				array(
-					 'timeout'   => 15,
-					 'sslverify' => FALSE
-				)
-			);
+					array(
+						'timeout'   => 15,
+						'sslverify' => FALSE
+					)
+				);
 
-			// make sure the response came back okay
-			if(is_wp_error($response)) {
-				return FALSE;
-			}
+				// make sure the response came back okay
+				if(is_wp_error($response)) {
+					return FALSE;
+				}
 
-			// decode the license data
-			$license_data = json_decode(wp_remote_retrieve_body($response));
+				// decode the license data
+				$license_data = json_decode(wp_remote_retrieve_body($response));
 
-			// $license_data->license will be either "active" or "inactive"
-			if(is_object($license_data)) {
-				update_option('mapi_license_status', $license_data->license);
+				// $license_data->license will be either "valid" or "invalid"
+				if(is_object($license_data)) {
+					update_option('mcmsadmin_license_status', $license_data->license);
+				}
 			}
 		}
 
