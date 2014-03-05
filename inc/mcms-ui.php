@@ -125,114 +125,113 @@ if(!class_exists('mcms_ui')) :
 
 			$wp_admin_bar->add_menu(
 				array(
-					 'title' => 'Get Support',
-					 'href'  => 'http://mind.sh/are/contact/?ref='.get_bloginfo('url'),
-					 'id'    => 'mcms',
-					 'meta'  => array('title' => 'Mindshare Studios Support', 'target' => '_blank')
+					'title' => 'Get Support',
+					'href'  => 'http://mind.sh/are/contact/?ref='.get_bloginfo('url'),
+					'id'    => 'mcms',
+					'meta'  => array('title' => 'Mindshare Studios Support', 'target' => '_blank')
 				)
 			);
 			if(!is_plugin_active('worker/init.php')) {
 
 				$wp_admin_bar->add_menu(
 					array(
-						 'parent' => 'mcms',
-						 'title'  => 'WordPress Security &amp; Backup Service',
-						 'id'     => 'mcms-security-service',
-						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/?ref='.get_bloginfo('url'),
-						 'meta'   => array('target' => '_blank')
+						'parent' => 'mcms',
+						'title'  => 'WordPress Security &amp; Backup Service',
+						'id'     => 'mcms-security-service',
+						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/?ref='.get_bloginfo('url'),
+						'meta'   => array('target' => '_blank')
 					)
 				);
 			}
 
 			$wp_admin_bar->add_menu(
 				array(
-					 'parent' => 'mcms',
-					 'title'  => 'View Hosting Status Updates',
-					 'id'     => 'mcms-updates',
-					 'href'   => 'http://mindsharestatus.wordpress.com',
-					 'meta'   => array('target' => '_blank')
+					'parent' => 'mcms',
+					'title'  => 'View Hosting Status Updates',
+					'id'     => 'mcms-updates',
+					'href'   => 'http://mindsharestatus.wordpress.com',
+					'meta'   => array('target' => '_blank')
 				)
 			);
-			if($_SERVER['SERVER_ADDR'] == '8.28.87.80') {
-
+			if(@$_SERVER['SERVER_ADDR'] == '8.28.87.80') {
 				$wp_admin_bar->add_menu(
 					array(
-						 'parent' => 'mcms',
-						 'title'  => 'View Realtime Server Performance',
-						 'id'     => 'mcms-performance',
-						 'href'   => 'http://mind.sh/are/server/?ref='.get_bloginfo('url'),
-						 'meta'   => array('target' => '_blank')
+						'parent' => 'mcms',
+						'title'  => 'View Realtime Server Performance',
+						'id'     => 'mcms-performance',
+						'href'   => 'http://mind.sh/are/server/?ref='.get_bloginfo('url'),
+						'meta'   => array('target' => '_blank')
 					)
 				);
 			}
 
 			$wp_admin_bar->add_menu(
 				array(
-					 'parent' => 'mcms',
-					 'title'  => 'Report an Outage or Emergency',
-					 'id'     => 'mcms-emergency',
-					 'href'   => 'http://mind.sh/are/emergency/?ref='.get_bloginfo('url'),
-					 'meta'   => array('target' => '_blank')
+					'parent' => 'mcms',
+					'title'  => 'Report an Outage or Emergency',
+					'id'     => 'mcms-emergency',
+					'href'   => 'http://mind.sh/are/emergency/?ref='.get_bloginfo('url'),
+					'meta'   => array('target' => '_blank')
 				));
 
 			$wp_admin_bar->add_menu(
 				array(
-					 'parent' => 'mcms',
-					 'title'  => 'Contact Mindshare Studios',
-					 'id'     => 'mcms-contact',
-					 'href'   => 'http://mind.sh/are/contact/?ref='.get_bloginfo('url'),
-					 'meta'   => array('target' => '_blank')
+					'parent' => 'mcms',
+					'title'  => 'Contact Mindshare Studios',
+					'id'     => 'mcms-contact',
+					'href'   => 'http://mind.sh/are/contact/?ref='.get_bloginfo('url'),
+					'meta'   => array('target' => '_blank')
 				));
 
 			if(is_plugin_active('worker/init.php')) {
 				$wp_admin_bar->add_menu(
 					array(
-						 'title' => 'Security <span style="color:#00CC00;">ON</span>',
-						 'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=1',
-						 'id'    => 'mcms-security',
-						 'meta'  => array(
-							 'title'  => 'Security &amp; Backup Service is enabled for your domain '.get_bloginfo('url'),
-							 'target' => '_blank'
-						 )
+						'title' => 'Security <span style="color:#00CC00;">ON</span>',
+						'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=1',
+						'id'    => 'mcms-security',
+						'meta'  => array(
+							'title'  => 'Security &amp; Backup Service is enabled for your domain '.get_bloginfo('url'),
+							'target' => '_blank'
+						)
 					)
 				);
 			} else {
 				$wp_admin_bar->add_menu(
 					array(
-						 'title' => 'Security <span style="color:#FF0000;">OFF</span>',
-						 'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
-																																											  'http://',
-																																											  'https://'
-																																										 ), '', get_home_url()),
-						 'id'    => 'mcms-security',
-						 'meta'  => array(
-							 'title'  => 'Security &amp; Backup Service is NOT enabled for your domain '.get_bloginfo('url').' (click for more information)',
-							 'target' => '_blank'
-						 )
+						'title' => 'Security <span style="color:#FF0000;">OFF</span>',
+						'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+								'http://',
+								'https://'
+							), '', get_home_url()),
+						'id'    => 'mcms-security',
+						'meta'  => array(
+							'title'  => 'Security &amp; Backup Service is NOT enabled for your domain '.get_bloginfo('url').' (click for more information)',
+							'target' => '_blank'
+						)
 					));
 				// sale
 				$wp_admin_bar->add_menu(
 					array(
-						 'parent' => 'mcms-security',
-						 'title'  => '<span style="text-shadow:none;color:#FF0000;font-weight:700">Security &amp; Backups are not enabled.</span> Learn more &rsaquo;',
-						 'id'     => 'mcms-security-sale',
-						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
-																																											   'http://',
-																																											   'https://'
-																																										  ), '', get_home_url()),
-						 'meta'   => array('target' => '_blank', 'title' => 'Learn more >')
+						'parent' => 'mcms-security',
+						'title'  => '<span style="text-shadow:none;color:#FF0000;font-weight:700">Security &amp; Backups are not enabled.</span> Learn more &rsaquo;',
+						'id'     => 'mcms-security-sale',
+						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+								'http://',
+								'https://'
+							), '', get_home_url()),
+						'meta'   => array('target' => '_blank', 'title' => 'Learn more >')
 					)
 				);
 				$wp_admin_bar->add_menu(
 					array(
-						 'parent' => 'mcms-security',
-						 'title'  => '<span>Protect your website now for <span style="color:#00CC00;">$9.95</span>/month (regularly $14.95)</span>',
-						 'id'     => 'mcms-security-sale2',
-						 'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
-																																											   'http://',
-																																											   'https://'
-																																										  ), '', get_home_url()),
-						 'meta'   => array('title' => 'On sale for a limited time >', 'target' => '_blank')
+						'parent' => 'mcms-security',
+						'title'  => '<span>Protect your website now for <span style="color:#00CC00;">$9.95</span>/month (regularly $14.95)</span>',
+						'id'     => 'mcms-security-sale2',
+						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+								'http://',
+								'https://'
+							), '', get_home_url()),
+						'meta'   => array('title' => 'On sale for a limited time >', 'target' => '_blank')
 					)
 				);
 			}
@@ -283,10 +282,10 @@ if(!class_exists('mcms_ui')) :
 		public static function admin_list() {
 			self::$admins = get_users(
 				array(
-					 'role'           => 'Administrator',
-					 'search'         => '*@'.base64_decode('bWluZHNoYXJl').'*',
-					 'search_columns' => array('user_email'),
-					 'fields'         => 'ID'
+					'role'           => 'Administrator',
+					'search'         => '*@'.base64_decode('bWluZHNoYXJl').'*',
+					'search_columns' => array('user_email'),
+					'fields'         => 'ID'
 				)
 			);
 			return self::$admins;

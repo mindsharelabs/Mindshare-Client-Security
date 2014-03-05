@@ -2,13 +2,12 @@
 /**
  * The Mindshare Options Framework is a flexible, lightweight framework for creating WordPress theme and plugin options screens.
  *
- * @version        2.1.1
+ * @version        2.1.3
  * @author         Mindshare Studios, Inc.
- * @copyright      Copyright (c) 2013
+ * @copyright      Copyright (c) 2014
  * @link           http://www.mindsharelabs.com/documentation/
  *
- * @credits        Forked from: Admin Page Class 0.9.9 by Ohad Raz http://bainternet.info
- *                 Icons: http://www.famfamfam.com/lab/icons/silk/
+ * @credits        Originally inspired by: Admin Page Class 0.9.9 by Ohad Raz http://bainternet.info
  *
  * @license        GNU General Public License v3.0 - license.txt
  *                 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
@@ -21,6 +20,7 @@
  *
  * Changelog:
  *
+ * 2.1.3 - Settings will now be set to their defaults and saved on first load
  * 2.1.1 - Minor bugfix
  * 2.1 - Added import / export, refactored pages and sections, bugfixes
  * 2.0 - Major refactor in prep for public release
@@ -33,6 +33,8 @@
  * 0.2 - major update, fixed import/export, added subtitle field, sanitization
  * 0.1 - first release
  *
+ * Damian and Bryce were here.
+ *
  *
  *
  */
@@ -44,7 +46,7 @@ if(!class_exists('mindshare_admin_options')) :
 		 *
 		 * @var string
 		 */
-		private $version = '2.1.1';
+		private $version = '2.1.3';
 
 		private $option_group, $setup, $settings, $sections;
 
@@ -176,7 +178,7 @@ if(!class_exists('mindshare_admin_options')) :
 
 			// Get array of form data
 			if (array_key_exists($this->option_group, $_POST)) {
-				$input = $_POST[$this->option_group];
+			$input = $_POST[$this->option_group];
 			} else {
 				$input = array();
 			}
@@ -229,8 +231,10 @@ if(!class_exists('mindshare_admin_options')) :
 				// Update the options within the class
 				$this->options = $input;
 
-				// Let the page renderer know that the settings have been updated
-				$this->settings_updated = TRUE;
+				if(!$this->reset_options) {
+					// Let the page renderer know that the settings have been updated
+					$this->settings_updated = true;
+				}
 			}
 		}
 
@@ -306,6 +310,7 @@ if(!class_exists('mindshare_admin_options')) :
 		private function initialize_settings($settings) {
 
 			$options = get_option($this->option_group);
+			$needs_update = false;
 
 			foreach($settings as $id => $setting) {
 
@@ -317,17 +322,17 @@ if(!class_exists('mindshare_admin_options')) :
 				$settings[$id] = wp_parse_args($setting, $this->default_setting);
 
 				// If a custom setting template has been specified, load those values as well
-				if(method_exists($this, 'default_field_'.$setting['type'])) {
-					$settings[$id] = wp_parse_args($settings[$id], call_user_func(array($this, 'default_field_'.$setting['type'])));
+				if(method_exists($this, 'default_field_' . $setting['type'])) {
+					$settings[$id] = wp_parse_args($settings[$id], call_user_func(array($this, 'default_field_' . $setting['type'])));
 				}
 
 				// Load the array of settings currently in use
-				if(!isset($this->fields[$setting['type']])) {
-					$this->fields[$setting['type']] = TRUE;
-				}
+				if(!isset($this->fields[$setting['type']]))
+					$this->fields[$setting['type']] = true;
 
 				// Set the default value if no option exists
-				if(!isset($options[$id])) {
+				if(!isset($options[$id]) && isset($settings[$id]['std'])) {
+					$needs_update = true;
 					$options[$id] = $settings[$id]['std'];
 				}
 
@@ -338,21 +343,28 @@ if(!class_exists('mindshare_admin_options')) :
 						// Fill in missing parts of the array
 						$settings[$id]['subfields'][$sub_id] = wp_parse_args($sub_setting, $this->default_setting);
 
-						if(method_exists($this, 'default_field_'.$sub_setting['type'])) {
-							$settings[$id]['subfields'][$sub_id] = wp_parse_args($settings[$id]['subfields'][$sub_id], call_user_func(array($this, 'default_field_'.$sub_setting['type'])));
+						if(method_exists($this, 'default_field_' . $sub_setting['type'])) {
+							$settings[$id]['subfields'][$sub_id] = wp_parse_args($settings[$id]['subfields'][$sub_id], call_user_func(array($this, 'default_field_' . $sub_setting['type'])));
 						}
 
 						// Set default value if needed
 						if(!isset($options[$id][$sub_id])) {
 							$options[$id][$sub_id] = $setting['subfields'][$sub_id]['std'];
 						}
+
 					}
 				}
 			}
 
 			$this->options = $options;
 
-			return ($settings);
+			// If new options have been added, set their default values
+			if($needs_update) {
+				update_option($this->option_group, $options);
+			}
+
+			return($settings);
+
 		}
 
 		/*----------------------------------------------------------------*/
@@ -599,8 +611,7 @@ if(!class_exists('mindshare_admin_options')) :
 		 *
 		 */
 
-		public function show_page() {
-			?>
+		public function show_page() { ?>
 			<?php $page = $this->get_page_by_screen(get_current_screen()); ?>
 			<div class="wrap">
 			<div class="icon32" id="icon-<?php echo $this->setup['page_icon'] ?>"></div>
@@ -614,6 +625,9 @@ if(!class_exists('mindshare_admin_options')) :
 				echo '<div id="setting-error-settings_updated" class="updated settings-error"><p><strong>Settings successfully imported.</strong></p></div>';
 			}
 
+			if($this->reset_options)
+				echo '<div id="setting-error-settings_updated" class="updated settings-error"><p><strong>Settings successfully reset.</strong></p></div>';
+
 			if($this->errors) {
 				foreach($this->errors as $id => $error_message) {
 					echo '<div id="message" class="error"><p>'.$error_message.'</p></div>';
@@ -625,7 +639,11 @@ if(!class_exists('mindshare_admin_options')) :
 				<?php wp_nonce_field($this->setup['project_slug'], $this->setup['project_slug'].'_nonce'); ?>
 				<input type="hidden" name="action" value="update">
 
-				<?php // only display tabs if there's more than one section
+				<?php if(has_action('before_page_' . $page['id'])) {
+					do_action('before_page_' . $page['id']);
+				}
+
+				// only display tabs if there's more than one section
 				if(count($page['sections']) > 1) {
 					?>
 
@@ -685,7 +703,7 @@ if(!class_exists('mindshare_admin_options')) :
 		private function show_section($section) {
 			?>
 			<?php $settings = $this->settings; ?>
-			<?php $options = $this->options; ?>
+
 			<table class="form-table">
 				<?php foreach($settings as $id => $setting) {
 					if($setting["section"] == $section) {

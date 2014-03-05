@@ -2,9 +2,9 @@
 /*
  Plugin Name: Mindshare Client Security
  Plugin URI: http://mindsharelabs.com/downloads/mindshare-client-security/
- Description: Provides security updates and additional features for WordPress CMS websites.
+ Description: Provides security updates and additional features for WordPress CMS websites. <a href="http://mind.sh/are/wordpress-security-and-backup-service/" target="_blank">Learn more &rsaquo;</a>
  Author: Mindshare Studios, Inc
- Version: 3.7.3
+ Version: 3.7.4
  Author URI: http://mind.sh/are/
  */
 
@@ -15,8 +15,13 @@
 		remove_action('admin_menu', array('mcms_ui', 'clear_dashboard'));
 		remove_action('admin_head', array('mcms_ui', 'admin_head'));
 
+ Turn off Admin Bar tweaks with:
+
+		remove_action('admin_bar_menu', array('mcms_ui', 'admin_bar_menu'));
+
  Changelog:
  
+	 3.7.4 - minor bugfix, upgraded Options for WordPress
 	 3.7.3 - re-enable EDD
 	 3.7.2 - temp disable EDD
 	 3.7.1 - critical bugfix
@@ -129,7 +134,7 @@ if(!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7.3';
+		private $class_version = '3.7.4';
 
 		/**
 		 * Used for automatic updates
