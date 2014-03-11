@@ -4,7 +4,7 @@
  Plugin URI: http://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites. <a href="http://mind.sh/are/wordpress-security-and-backup-service/" target="_blank">Learn more &rsaquo;</a>
  Author: Mindshare Studios, Inc
- Version: 3.7.4
+ Version: 3.7.4.1
  Author URI: http://mind.sh/are/
  */
 
@@ -21,6 +21,7 @@
 
  Changelog:
  
+	 3.7.4.1 - minor bugfix
 	 3.7.4 - minor bugfix, upgraded Options for WordPress
 	 3.7.3 - re-enable EDD
 	 3.7.2 - temp disable EDD
@@ -109,7 +110,7 @@ if(!defined('GF_LICENSE_KEY')) {
 }
 
 // EDD updater
-if(!class_exists('Mindshare_API_Plugin_Updater')) {
+if(!class_exists('Mindshare_Security_Plugin_Updater')) {
 	// load our custom updater
 	include_once(MCMS_ADMIN_PATH.'lib/Mindshare_Security_Plugin_Updater.php');
 }
@@ -134,7 +135,7 @@ if(!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7.4';
+		private $class_version = '3.7.4.1';
 
 		/**
 		 * Used for automatic updates
