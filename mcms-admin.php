@@ -4,7 +4,7 @@
  Plugin URI: http://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites. <a href="http://mind.sh/are/wordpress-security-and-backup-service/" target="_blank">Learn more &rsaquo;</a>
  Author: Mindshare Studios, Inc
- Version: 3.7.4.1
+ Version: 3.7.4.2
  Author URI: http://mind.sh/are/
  */
 
@@ -21,6 +21,7 @@
 
  Changelog:
  
+	 3.7.4.2 - add composer.json file, WP3.8 auto update support
 	 3.7.4.1 - minor bugfix
 	 3.7.4 - minor bugfix, upgraded Options for WordPress
 	 3.7.3 - re-enable EDD
@@ -135,7 +136,7 @@ if(!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7.4.1';
+		private $class_version = '3.7.4.2';
 
 		/**
 		 * Used for automatic updates
@@ -162,6 +163,7 @@ if(!class_exists('mcms_admin')) :
 			add_action('wp_dashboard_setup', array('mcms_ui', 'register_dashboard_widget'));
 			add_filter('all_plugins', array('mcms_ui', 'plugin_replace'));
 
+			add_filter('auto_update_plugin', '__return_true'); // add WP3.8+ auto-update support
 			add_action('admin_init', array($this, 'check_update'));
 			register_activation_hook(__FILE__, array($this, 'install'));
 		}

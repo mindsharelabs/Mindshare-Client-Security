@@ -1,0 +1,23 @@
+{
+	"name":              "mindsharelabs/mindshare-client-security",
+	"description":       "Provides security updates and additional features for WordPress CMS websites.",
+	"minimum-stability": "stable",
+	"license":           "proprietary",
+	"authors":           [
+		{
+			"name":     "Bryce Corkins",
+			"email":    "bryce@mindsharestudios.com",
+			"homepage": "http://mind.sh/are/",
+			"role":     "Developer"
+		},
+		{
+			"name":     "Damian Taggart",
+			"email":    "damian@mindsharestudios.com",
+			"homepage": "http://mind.sh/are/",
+			"role":     "Developer"
+		}
+	],
+	"require":           {
+		"php": ">=5.3.0"
+	}
+}
