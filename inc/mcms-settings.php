@@ -57,9 +57,9 @@ if(!class_exists('mcms_settings')) :
 			update_option('use_smilies', '');
 			update_option('default_post_edit_rows', '15');
 
-			// set frontpage and turns on static pages
-			update_option('show_on_front', 'page');
-			update_option('page_on_front', 2);
+			// set frontpage and turns on static pages // disabled for WP 3.8+
+			//update_option('show_on_front', 'page');
+			//update_option('page_on_front', 2);
 
 		}
 
