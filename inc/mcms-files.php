@@ -52,6 +52,13 @@ if(!class_exists('mcms_files')) :
 			if(file_exists($thumbs)) {
 				unlink($thumbs);
 			}
+
+			// remove PHP crash 'core' file
+			$core = ABSPATH.'core';
+			if(file_exists($core)) {
+				unlink($core);
+			}
+
 			// terminate Hello Dolly with extreme prejudice
 			if(file_exists(WP_PLUGIN_DIR.'/hello.php')) {
 				delete_plugins(array('hello.php'));
@@ -152,36 +159,76 @@ if(!class_exists('mcms_files')) :
 				$rules .= "#Redirect 301 ".$home_root."login ".$https_status."://".MCMS_DOMAIN_ROOT.$home_root."wp-login.php\n";
 				$rules .= "#Redirect 301 ".$home_root."logout ".$https_status."://".MCMS_DOMAIN_ROOT.$home_root."wp-login.php?action=logout\n";
 				$rules .= "\n";
-				$rules .= "# Performance: add default Expires header, http://developer.yahoo.com/performance/rules.html#expires\n";
-				$rules .= "#<IfModule mod_expires.c>\n";
-				$rules .= "#ExpiresActive on\n";
-				$rules .= "#ExpiresDefault 'access plus 1 month'\n";
-				$rules .= "#</IfModule>\n";
-				$rules .= "\n";
-				$rules .= "# Performance: remove inode from Etag configuration\n";
-				$rules .= "#FileETag MTime Size\n";
-				$rules .= "\n";
-				$rules .= "# Performance: add gzip compression, http://developer.yahoo.com/performance/rules.html#gzip\n";
-				$rules .= "#<IfModule mod_deflate.c>\n";
-				$rules .= "# Insert filter on all content:\n";
-				$rules .= "#SetOutputFilter DEFLATE\n";
-				$rules .= "# Insert filter on selected content types only:\n";
-				$rules .= "#AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript\n";
-				$rules .= "# Netscape 4.x has some problems...\n";
-				$rules .= "#BrowserMatch ^Mozilla/4 gzip-only-text/html\n";
-				$rules .= "# Netscape 4.06-4.08 have some more problems\n";
-				$rules .= "#BrowserMatch ^Mozilla/4\.0[678] no-gzip\n";
-				$rules .= "# MSIE masquerades as Netscape, but it is fine\n";
-				$rules .= "#BrowserMatch \bMSIE !no-gzip !gzip-only-text/html\n";
-				$rules .= "# Don't compress images\n";
-				$rules .= "#SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary\n";
-				$rules .= "# Make sure proxies don't deliver the wrong content\n";
-				$rules .= "#Header append Vary User-Agent env=!dont-vary\n";
-				$rules .= "#</IfModule>\n";
-				$rules .= "\n";
-				$rules .= "# Performance: uncomment if running in cluster environment, http://developer.yahoo.com/performance/rules.html#etags\n";
-				$rules .= "#FileETag none\n";
-				$rules .= "\n";
+
+				// GZIP rules start
+
+				if(@$_SERVER['SERVER_ADDR'] == '8.28.87.80' || @$_SERVER['SERVER_ADDR'] == '64.90.58.127' /*|| @$_SERVER['SERVER_ADDR'] == '::1'*/ ) {
+					// enabled by default
+					$rules .= "# Performance: add default Expires header, http://developer.yahoo.com/performance/rules.html#expires\n";
+					$rules .= "<IfModule mod_expires.c>\n";
+					$rules .= "ExpiresActive on\n";
+					$rules .= "ExpiresDefault 'access plus 1 month'\n";
+					$rules .= "</IfModule>\n";
+					$rules .= "\n";
+					$rules .= "# Performance: remove inode from Etag configuration\n";
+					$rules .= "FileETag MTime Size\n";
+					$rules .= "\n";
+					$rules .= "# Performance: add gzip compression, http://developer.yahoo.com/performance/rules.html#gzip\n";
+					$rules .= "<IfModule mod_deflate.c>\n";
+					$rules .= "# Insert filter on all content:\n";
+					$rules .= "SetOutputFilter DEFLATE\n";
+					$rules .= "# Insert filter on selected content types only:\n";
+					$rules .= "AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript\n";
+					$rules .= "# Netscape 4.x has some problems...\n";
+					$rules .= "BrowserMatch ^Mozilla/4 gzip-only-text/html\n";
+					$rules .= "# Netscape 4.06-4.08 have some more problems\n";
+					$rules .= "BrowserMatch ^Mozilla/4\.0[678] no-gzip\n";
+					$rules .= "# MSIE masquerades as Netscape, but it is fine\n";
+					$rules .= "BrowserMatch \bMSIE !no-gzip !gzip-only-text/html\n";
+					$rules .= "# Don't compress images\n";
+					$rules .= "SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary\n";
+					$rules .= "# Make sure proxies don't deliver the wrong content\n";
+					$rules .= "Header append Vary User-Agent env=!dont-vary\n";
+					$rules .= "</IfModule>\n";
+					$rules .= "\n";
+					$rules .= "# Performance: uncomment if running in cluster environment, http://developer.yahoo.com/performance/rules.html#etags\n";
+					$rules .= "FileETag none\n";
+					$rules .= "\n";
+				} else {
+					// disabled by default
+					$rules .= "# Performance: add default Expires header, http://developer.yahoo.com/performance/rules.html#expires\n";
+					$rules .= "#<IfModule mod_expires.c>\n";
+					$rules .= "#ExpiresActive on\n";
+					$rules .= "#ExpiresDefault 'access plus 1 month'\n";
+					$rules .= "#</IfModule>\n";
+					$rules .= "\n";
+					$rules .= "# Performance: remove inode from Etag configuration\n";
+					$rules .= "#FileETag MTime Size\n";
+					$rules .= "\n";
+					$rules .= "# Performance: add gzip compression, http://developer.yahoo.com/performance/rules.html#gzip\n";
+					$rules .= "#<IfModule mod_deflate.c>\n";
+					$rules .= "# Insert filter on all content:\n";
+					$rules .= "#SetOutputFilter DEFLATE\n";
+					$rules .= "# Insert filter on selected content types only:\n";
+					$rules .= "#AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript\n";
+					$rules .= "# Netscape 4.x has some problems...\n";
+					$rules .= "#BrowserMatch ^Mozilla/4 gzip-only-text/html\n";
+					$rules .= "# Netscape 4.06-4.08 have some more problems\n";
+					$rules .= "#BrowserMatch ^Mozilla/4\.0[678] no-gzip\n";
+					$rules .= "# MSIE masquerades as Netscape, but it is fine\n";
+					$rules .= "#BrowserMatch \bMSIE !no-gzip !gzip-only-text/html\n";
+					$rules .= "# Don't compress images\n";
+					$rules .= "#SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary\n";
+					$rules .= "# Make sure proxies don't deliver the wrong content\n";
+					$rules .= "#Header append Vary User-Agent env=!dont-vary\n";
+					$rules .= "#</IfModule>\n";
+					$rules .= "\n";
+					$rules .= "# Performance: uncomment if running in cluster environment, http://developer.yahoo.com/performance/rules.html#etags\n";
+					$rules .= "#FileETag none\n";
+					$rules .= "\n";
+				}
+				// GZIP rules end
+
 				$rules .= "# Maintenance: take site offline except one IP\n";
 				$rules .= "#RewriteBase $home_root\n";
 				$rules .= "#RewriteCond %{REMOTE_ADDR} !^111\.111\.111\.111$\n";
