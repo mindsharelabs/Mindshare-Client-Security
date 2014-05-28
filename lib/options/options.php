@@ -33,7 +33,6 @@
  * 0.2 - major update, fixed import/export, added subtitle field, sanitization
  * 0.1 - first release
  *
- * Damian and Bryce were here.
  *
  *
  *
