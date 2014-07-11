@@ -1,4 +1,4 @@
-Mindshare Client Security
+Mindshare Security
 =============
 
 - Author: Mindshare Studios, Inc.
@@ -20,6 +20,9 @@ Turn off Admin Bar tweaks with:
 	remove_action('admin_bar_menu', array('mcms_ui', 'admin_bar_menu'));
 
 # Changelog:
+
+## 3.7.5
+Renamed plugin,  change Access-Control-Allow-Origin in default htaccess, added custom post types to the "Right Now" box on the Dashboard, added action to prevent new user notification to admins, added auto-updates for comment blacklist
 
 ## 3.7.4.4
 

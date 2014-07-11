@@ -1,13 +1,12 @@
 <?php
 /*
- Plugin Name: Mindshare Client Security
+ Plugin Name: Mindshare Security
  Plugin URI: http://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites. <a href="http://mind.sh/are/wordpress-security-and-backup-service/" target="_blank">Learn more &rsaquo;</a>
- Author: Mindshare Studios, Inc
- Version: 3.7.4.4
+ Author: Mindshare Studios, Inc.
+ Version: 3.7.5
  Author URI: http://mind.sh/are/
  */
-
 
 if(!defined('MCMS_DOMAIN_ROOT')) {
 	define('MCMS_DOMAIN_ROOT', preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME'])));
@@ -17,7 +16,7 @@ if(!defined('MCMS_UPDATE_URL')) {
 }
 
 if(!defined('MCMS_PLUGIN_NAME')) {
-	define('MCMS_PLUGIN_NAME', 'Mindshare Client Security');
+	define('MCMS_PLUGIN_NAME', 'Mindshare Security');
 }
 
 if(!defined('MCMS_PLUGIN_SLUG')) {
@@ -26,6 +25,9 @@ if(!defined('MCMS_PLUGIN_SLUG')) {
 
 if(!defined('MCMS_ADMIN_PATH')) {
 	define('MCMS_ADMIN_PATH', plugin_dir_path(__FILE__));
+}
+if(!defined('MCMS_ADMIN_FILE')) {
+	define('MCMS_ADMIN_FILE', __FILE__);
 }
 
 if(!defined('GF_LICENSE_KEY')) {
@@ -41,6 +43,8 @@ if(!class_exists('Mindshare_Security_Plugin_Updater')) {
 if(!class_exists('mindshare_admin_options')) {
 	require_once(MCMS_ADMIN_PATH.'lib/options/options.php'); // include options framework
 }
+
+require_once(MCMS_ADMIN_PATH.'inc/mcms-email.php'); // include options framework
 
 if(!class_exists('mcms_admin')) :
 
@@ -58,7 +62,7 @@ if(!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7.4.4';
+		private $class_version = '3.7.5';
 
 		/**
 		 * Used for automatic updates
@@ -74,6 +78,7 @@ if(!class_exists('mcms_admin')) :
 			require_once('inc/mcms-files.php');
 			require_once('inc/mcms-ui.php');
 			require_once('inc/mcms-settings.php');
+			require_once('inc/mcms-blacklist.php');
 
 			add_action('admin_init', array('mcms_ui', 'admin_list'));
 			add_action('admin_head', array('mcms_ui', 'admin_head'));
@@ -82,13 +87,18 @@ if(!class_exists('mcms_admin')) :
 			add_action('dashboard_glance_items', array('mcms_ui', 'custom_rightnow'));
 			add_action('pre_user_query', array('mcms_ui', 'user_list'));
 			add_action('plugins_loaded', array('mcms_ui', 'options_page'));
+			add_action('plugins_loaded', array('mcms_blacklist', 'plugins_loaded'), 10, 2);
 			add_action('wp_dashboard_setup', array('mcms_ui', 'register_dashboard_widget'));
-			add_filter('all_plugins', array('mcms_ui', 'plugin_replace'));
 
+			add_filter('all_plugins', array('mcms_ui', 'plugin_replace'));
 			add_filter('auto_update_plugin', '__return_true'); // add WP3.8+ auto-update support
+			add_filter('plugin_row_meta', array('mcms_blacklist', 'plugin_row_meta'), 10, 2);
+
 			add_action('admin_init', array($this, 'check_update'));
 			//add_action('admin_init', array($this, 'install')); //debugging
-			register_activation_hook(__FILE__, array($this, 'install'));
+
+			register_activation_hook(MCMS_ADMIN_FILE, array($this, 'install'));
+			register_deactivation_hook(MCMS_ADMIN_FILE, array($this, 'uninstall'));
 		}
 
 		/**
@@ -112,6 +122,8 @@ if(!class_exists('mcms_admin')) :
 			mcms_files::robots_defaults();
 			mcms_files::crossdomain();
 
+			mcms_blacklist::install();
+
 			if($this->options !== FALSE) {
 				if(array_key_exists('mcms_load_defaults', $this->options)) {
 					mcms_settings::defaults();
@@ -121,6 +133,14 @@ if(!class_exists('mcms_admin')) :
 					update_option('mindshare_admin_options', $this->options);
 				}
 			}
+		}
+
+		/**
+		 * uninstall
+		 *
+		 */
+		public function uninstall() {
+			mcms_blacklist::uninstall();
 		}
 
 		/**
@@ -165,7 +185,7 @@ if(!class_exists('mcms_admin')) :
 
 			$mindshare_security_updater = new Mindshare_Security_Plugin_Updater(
 				MCMS_UPDATE_URL,
-				__FILE__,
+				MCMS_ADMIN_FILE,
 				array(
 					'version'   => $this->class_version, // current version number
 					'license'   => $this->license_key,

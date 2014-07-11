@@ -104,7 +104,8 @@ if(!class_exists('mcms_files')) :
 				$rules .= "\n";
 				$rules .= "<FilesMatch '\.(ttf|otf|woff)$'>\n";
 				$rules .= "<IfModule mod_headers.c>\n";
-				$rules .= "Header set Access-Control-Allow-Origin: *.".MCMS_DOMAIN_ROOT."\n";
+				$rules .= "#Header set Access-Control-Allow-Origin: ".MCMS_DOMAIN_ROOT."\n";
+				$rules .= "Header set Access-Control-Allow-Origin: *\n";
 				$rules .= "</IfModule>\n";
 				$rules .= "</FilesMatch>\n";
 				$rules .= "\n";

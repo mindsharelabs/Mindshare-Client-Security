@@ -61,7 +61,6 @@ if(!class_exists('mindshare_admin_config')) :
 			<br /><strong>&bull;</strong> enables comment_registration
 			<br /><strong>&bull;</strong> enables comment_whitelist
 			<br /><strong>&bull;</strong> disables trackbacks
-			<br /><strong>&bull;</strong> populates blacklist words
 			<br /><strong>&bull;</strong> enables HTML tag cleanup
 			<br /><strong>&bull;</strong> disbales use_smilies
 			<br /><strong>&bull;</strong> changes default_post_edit_rows to 15

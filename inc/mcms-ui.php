@@ -20,14 +20,14 @@ if(!class_exists('mcms_ui')) :
 
 		public static $admins;
 
-		// wp & plugin CSS changes
 		/**
+		 * wp & plugin CSS changes
 		 *
 		 */
 		public static function admin_head() {
 			?>
 			<style type="text/css">
-				#footer, #footer-upgrade, #favorite-actions, #footer-left, #acx_plugin_dashboard_widget, #blogplay_db_widget, #yoast_posts, #yst_db_widget, #dashboard_op, #header-logo, #wpgeo_dashboard, #dashboard_secondary, #dashboard_primary, #dashboard_quick_press, #dashboard_recent_comments, #dashboard_plugins, #dashboard_right_now, #fluency-footer, #wp-admin-bar-wp-logo, #tab-link-help-content, #tab-panel-help-content, #wp-admin-bar-new-content, #welcome-panel, label[for^='wp_welcome_panel'], #blc-more-plugins-link-wrap {
+				#footer, #footer-upgrade, #favorite-actions, #footer-left, #acx_plugin_dashboard_widget, #blogplay_db_widget, #yoast_posts, #yst_db_widget, #dashboard_op, #header-logo, #wpgeo_dashboard, #dashboard_secondary, #dashboard_primary, #dashboard_quick_press, #dashboard_recent_comments, #dashboard_plugins, #dashboard_right_now, #fluency-footer, #wp-admin-bar-wp-logo, #tab-link-help-content, #tab-panel-help-content, #wp-admin-bar-new-content, #welcome-panel, label[for^='wp_welcome_panel'], #blc-more-plugins-link-wrap,#sidebar-container.wpseo_content_cell {
 					display:none !important;
 				}
 			</style>

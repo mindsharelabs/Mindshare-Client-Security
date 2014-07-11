@@ -50,7 +50,7 @@ if(!class_exists('mcms_settings')) :
 			update_option('comment_registration', '1');
 			update_option('comment_whitelist', '1');
 			update_option('use_trackback', '0');
-			update_option('blacklist_keys', "adipex\nadvicer\nbaccarrat\nbllogspot\ncar-rental-e-site\ncar-rentals-e-site\ncarisoprodol\ncialis\ncoolcoolhu\ncoolhu\ncredit-card-debt\ncredit-report-4u\ncwas\ncyclen\ncyclobenzaprine\ndating-e-site\ndebt-consolidation-consultant\ndiscreetordering\nequityloans\nfioricet\nflowers-leading-site\nfreenet-shopping\nhealth-insurancedeals-4u\nhomeequityloans\nhomefinance\nholdempoker\nholdemsoftware\nholdemtexasturbowilson\nhotel-dealse-site\nhotele-site\nhotelse-site\ninsurance-quotesdeals-4u\ninsurancedeals-4u\njrcreations\nlevitra\nmacinstruct\nmortgage-4-u\nmortgagequotes\nonline-gambling\nonlinegambling-4u\nottawavalleyag\nownsthis\npalm-texas-holdem-game\nphentermine\npoze\nrental-car-e-site\nshemale\nthorcarlson\ntop-site\ntop-e-site\ntramadol\ntrim-spa\nultram\nvaleofglamorganconservatives\nviagra\nvioxx\nxanax\nzolus");
+			//update_option('blacklist_keys', "adipex\nadvicer\nbaccarrat\nbllogspot\ncar-rental-e-site\ncar-rentals-e-site\ncarisoprodol\ncialis\ncoolcoolhu\ncoolhu\ncredit-card-debt\ncredit-report-4u\ncwas\ncyclen\ncyclobenzaprine\ndating-e-site\ndebt-consolidation-consultant\ndiscreetordering\nequityloans\nfioricet\nflowers-leading-site\nfreenet-shopping\nhealth-insurancedeals-4u\nhomeequityloans\nhomefinance\nholdempoker\nholdemsoftware\nholdemtexasturbowilson\nhotel-dealse-site\nhotele-site\nhotelse-site\ninsurance-quotesdeals-4u\ninsurancedeals-4u\njrcreations\nlevitra\nmacinstruct\nmortgage-4-u\nmortgagequotes\nonline-gambling\nonlinegambling-4u\nottawavalleyag\nownsthis\npalm-texas-holdem-game\nphentermine\npoze\nrental-car-e-site\nshemale\nthorcarlson\ntop-site\ntop-e-site\ntramadol\ntrim-spa\nultram\nvaleofglamorganconservatives\nviagra\nvioxx\nxanax\nzolus");
 
 			// writing
 			update_option('use_balanceTags', '1');
@@ -70,7 +70,6 @@ if(!class_exists('mcms_settings')) :
 			get_option('permalink_structure');
 			$wp_rewrite->flush_rules();
 		}
-
 	}
 
 endif;
