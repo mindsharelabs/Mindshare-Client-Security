@@ -3,7 +3,7 @@ Mindshare Security
 
 - Author: Mindshare Studios, Inc.
 - License: GPL v3
-- Copyright: 2006-2014
+- Copyright: 2006-2015
 - Link: http://mindsharelabs.com/downloads/mindshare-client-security/
 
 Provides security updates and additional features for WordPress CMS websites.
@@ -20,6 +20,9 @@ Turn off Admin Bar tweaks with:
 	remove_action('admin_bar_menu', array('mcms_ui', 'admin_bar_menu'));
 
 # Changelog:
+
+## 3.7.6
+
 
 ## 3.7.5
 Renamed plugin,  change Access-Control-Allow-Origin in default htaccess, added custom post types to the "Right Now" box on the Dashboard, added action to prevent new user notification to admins, added auto-updates for comment blacklist
