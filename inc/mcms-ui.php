@@ -291,16 +291,5 @@ if(!class_exists('mcms_ui')) :
 			return self::$admins;
 		}
 
-		/**
-		 * options_page
-		 *
-		 */
-		public static function options_page() {
-			$user = wp_get_current_user();
-
-			if(in_array($user->ID, self::admin_list())) {
-				require_once(MCMS_ADMIN_PATH."views/mindshare-admin-options.php");
-			}
-		}
 	}
 endif;

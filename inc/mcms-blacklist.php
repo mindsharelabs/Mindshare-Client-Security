@@ -4,8 +4,6 @@
  *
  * Forked from Blacklist Auto Updater by Sergej Müller, https://github.com/sergejmueller/wp-blacklist-updater
  *
- * ui changes
- *
  * @created   7/11/14 3:11 PM
  * @author    Mindshare Studios, Inc.
  * @copyright Copyright (c) 2014

@@ -21,9 +21,9 @@ class Mindshare_Security_Plugin_Updater {
 	 * @uses plugin_basename()
 	 * @uses hook()
 	 *
-	 * @param string $_api_url     The URL pointing to the custom API endpoint.
+	 * @param string $_api_url The URL pointing to the custom API endpoint.
 	 * @param string $_plugin_file Path to the plugin file.
-	 * @param array  $_api_data    Optional data to send with API calls.
+	 * @param array $_api_data Optional data to send with API calls.
 	 *
 	 * @return \Mindshare_Security_Plugin_Updater
 	 */
@@ -88,7 +88,7 @@ class Mindshare_Security_Plugin_Updater {
 	 *
 	 * @uses api_request()
 	 *
-	 * @param mixed  $_data
+	 * @param mixed $_data
 	 * @param string $_action
 	 * @param object $_args
 	 *
@@ -112,7 +112,7 @@ class Mindshare_Security_Plugin_Updater {
 	/**
 	 * Disable SSL verification in order to prevent download update failures
 	 *
-	 * @param array  $args
+	 * @param array $args
 	 * @param string $url
 	 *
 	 * @return object $array
@@ -133,7 +133,7 @@ class Mindshare_Security_Plugin_Updater {
 	 * @uses         is_wp_error()
 	 *
 	 * @param string $_action The requested action.
-	 * @param array  $_data   Parameters for the API action.
+	 * @param array $_data Parameters for the API action.
 	 *
 	 * @return false||object
 	 */
@@ -147,22 +147,24 @@ class Mindshare_Security_Plugin_Updater {
 			return;
 		}
 
-		if(empty($data['license']))
+		if(empty($data['license'])) {
 			return;
+		}
 
 		$api_params = array(
 			'edd_action' => 'get_version',
-			'license'    => $data['license'],
-			'name'       => $data['item_name'],
-			'slug'       => $this->slug,
-			'author'     => $data['author']
+			'license' => $data['license'],
+			'name' => $data['item_name'],
+			'slug' => $this->slug,
+			'author' => $data['author']
 		);
 		$request = wp_remote_post($this->api_url, array('timeout' => 15, 'sslverify' => FALSE, 'body' => $api_params));
 
 		if(!is_wp_error($request)):
 			$request = json_decode(wp_remote_retrieve_body($request));
-			if($request && isset($request->sections))
+			if($request && isset($request->sections)) {
 				$request->sections = maybe_unserialize($request->sections);
+			}
 			return $request;
 		else:
 			return FALSE;

@@ -4,11 +4,13 @@ Mindshare Security
 - Author: Mindshare Studios, Inc.
 - License: GPL v3
 - Copyright: 2006-2015
-- Link: http://mindsharelabs.com/downloads/mindshare-client-security/
+- Link: https://mindsharelabs.com/downloads/mindshare-client-security/
 
 Provides security updates and additional features for WordPress CMS websites.
 
-# Advanced Usage:
+# Advanced Usage
+
+Any of these options can be added to your theme or plugin:
 
 Turn off Dashboard cleanup with:
 
@@ -19,10 +21,59 @@ Turn off Admin Bar tweaks with:
 
 	remove_action('admin_bar_menu', array('mcms_ui', 'admin_bar_menu'));
 
+Set Mindshare defaults in WordPress (only needs to run once, then can be removed):
+
+	// set defaults
+	add_action('admin_init', array('mcms_settings', 'defaults'));
+
+	// set rewrite rules to /%category%/%postname%/
+	add_action('admin_init', array('mcms_settings', 'rewrite'));
+
+Create a crossdomain.xml file (for Flash). Technically, this is deprecated but still works if you need it. Create the file like so:
+
+	mcms_files::crossdomain();
+
+To avoid PHP errors if you deactivate the Mindshare Security plugin wrap any of the above examples with a test to make sure it is active:
+
+	if(is_plugin_active('mindshare-client-security.git/mcms-admin.php')) {
+	 	// your code
+	 }
+
+# Default Settings
+
+This feature initializes WordPress with some default settings. It is meant to save a little time when setting up new WordPress installs <strong>ONLY</strong>.
+
+* sets the name/tagline
+* turns off organization of uploads into year and month
+* disables commenting by default
+* disables show_avatars by default
+* deletes Hello Dolly, readme.html, license.txt
+* set site admin email to info@mindsharestudios.com
+* set RSS feeds to summary mode
+* sets time / date settings
+* sets avatar_rating to PG
+* clears default_pingback_flag
+* sets default_ping_status to closed
+* disabled comment emails
+* enables comment_moderation
+* enables comment_registration
+* enables comment_whitelist
+* disables trackbacks
+* enables HTML tag cleanup
+* disbales use_smilies
+* changes default_post_edit_rows to 15
+* sets frontpage to static page
+* sets permalinks to "/%category%/%postname%/"
+
+
 # Changelog:
 
 ## 3.7.6
-
+* Remove Options framework, replaced with simple flag for loading defaults
+* Removed admin page, no longer needed.
+* Added check for nginx to disable Apache specific stuff on nginx
+* Auto-activate ACF
+* Made blacklist auto updates OFF by default (it was too long for many shared hosts POST limits)
 
 ## 3.7.5
 Renamed plugin,  change Access-Control-Allow-Origin in default htaccess, added custom post types to the "Right Now" box on the Dashboard, added action to prevent new user notification to admins, added auto-updates for comment blacklist
