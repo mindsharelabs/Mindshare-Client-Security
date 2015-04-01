@@ -68,6 +68,10 @@ This feature initializes WordPress with some default settings. It is meant to sa
 
 # Changelog:
 
+## 3.7.7
+- Bugfix for automatic updates
+- Speed improvements
+
 ## 3.7.6
 * Remove Options framework, replaced with simple flag for loading defaults
 * Removed admin page, no longer needed.
