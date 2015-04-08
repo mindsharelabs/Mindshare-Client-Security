@@ -269,9 +269,9 @@ class Mindshare_Security_Plugin_Updater {
 			return;
 		}
 
-		if($this->api_url == home_url()) {
+		/*if($this->api_url == home_url()) {
 			return FALSE; // Don't allow a plugin to ping itself
-		}
+		}*/
 
 		$api_params = array(
 			'edd_action' => 'get_version',
