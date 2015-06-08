@@ -27,12 +27,12 @@ if(!class_exists('mcms_ui')) :
 		public static function admin_head() {
 			?>
 			<style type="text/css">
-				#footer, #footer-upgrade, #favorite-actions, #footer-left, #acx_plugin_dashboard_widget, #blogplay_db_widget, #yoast_posts, #yst_db_widget, #dashboard_op, #header-logo, #wpgeo_dashboard, #dashboard_secondary, #dashboard_primary, #dashboard_quick_press, #dashboard_recent_comments, #dashboard_plugins, #dashboard_right_now, #fluency-footer, #wp-admin-bar-wp-logo, #tab-link-help-content, #tab-panel-help-content, #wp-admin-bar-new-content, #welcome-panel, label[for^='wp_welcome_panel'], #blc-more-plugins-link-wrap,#sidebar-container.wpseo_content_cell {
+				#footer, #footer-upgrade, #favorite-actions, #footer-left, #acx_plugin_dashboard_widget, #blogplay_db_widget, #yoast_posts, #yst_db_widget, #dashboard_op, #header-logo, #wpgeo_dashboard, #dashboard_secondary, #dashboard_primary, #dashboard_quick_press, #dashboard_recent_comments, #dashboard_plugins, #dashboard_right_now, #fluency-footer, #wp-admin-bar-wp-logo, #tab-link-help-content, #tab-panel-help-content, #wp-admin-bar-new-content, #welcome-panel, label[for^='wp_welcome_panel'], #blc-more-plugins-link-wrap, #sidebar-container.wpseo_content_cell {
 					display:none !important;
 				}
 			</style>
 
-		<?php
+			<?php
 		}
 
 		/**
@@ -56,7 +56,7 @@ if(!class_exists('mcms_ui')) :
 					continue;
 				}
 				usort($items, "comparator");
-				$submenu[$key] = $items;
+				$submenu[ $key ] = $items;
 			}
 		}
 
@@ -73,7 +73,7 @@ if(!class_exists('mcms_ui')) :
 		 *
 		 */
 		public static function dashboard_widget() {
-			echo '<iframe src="//mindsharelabs.com/update/helpers/mindshare-custom-dashboard.php?ref='.get_bloginfo('url').'" frameborder="0" scrolling="No" width="420" height="200" marginheight="0" marginwidth="0" /></iframe>';
+			echo '<iframe src="//mindsharelabs.com/update/helpers/mindshare-custom-dashboard.php?ref=' . get_bloginfo('url') . '" frameborder="0" scrolling="No" width="420" height="200" marginheight="0" marginwidth="0" /></iframe>';
 		}
 
 		// add/remove dashboard widgets
@@ -126,7 +126,7 @@ if(!class_exists('mcms_ui')) :
 			$wp_admin_bar->add_menu(
 				array(
 					'title' => 'Get Support',
-					'href'  => 'http://mind.sh/are/contact/?ref='.get_bloginfo('url'),
+					'href'  => 'http://mind.sh/are/contact/?ref=' . get_bloginfo('url'),
 					'id'    => 'mcms',
 					'meta'  => array('title' => 'Mindshare Studios Support', 'target' => '_blank')
 				)
@@ -138,7 +138,7 @@ if(!class_exists('mcms_ui')) :
 						'parent' => 'mcms',
 						'title'  => 'WordPress Security &amp; Backup Service',
 						'id'     => 'mcms-security-service',
-						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/?ref='.get_bloginfo('url'),
+						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/?ref=' . get_bloginfo('url'),
 						'meta'   => array('target' => '_blank')
 					)
 				);
@@ -159,7 +159,7 @@ if(!class_exists('mcms_ui')) :
 						'parent' => 'mcms',
 						'title'  => 'View Realtime Server Performance',
 						'id'     => 'mcms-performance',
-						'href'   => 'http://mind.sh/are/server/?ref='.get_bloginfo('url'),
+						'href'   => 'http://mind.sh/are/server/?ref=' . get_bloginfo('url'),
 						'meta'   => array('target' => '_blank')
 					)
 				);
@@ -170,7 +170,7 @@ if(!class_exists('mcms_ui')) :
 					'parent' => 'mcms',
 					'title'  => 'Report an Outage or Emergency',
 					'id'     => 'mcms-emergency',
-					'href'   => 'http://mind.sh/are/emergency/?ref='.get_bloginfo('url'),
+					'href'   => 'http://mind.sh/are/emergency/?ref=' . get_bloginfo('url'),
 					'meta'   => array('target' => '_blank')
 				));
 
@@ -179,7 +179,7 @@ if(!class_exists('mcms_ui')) :
 					'parent' => 'mcms',
 					'title'  => 'Contact Mindshare Studios',
 					'id'     => 'mcms-contact',
-					'href'   => 'http://mind.sh/are/contact/?ref='.get_bloginfo('url'),
+					'href'   => 'http://mind.sh/are/contact/?ref=' . get_bloginfo('url'),
 					'meta'   => array('target' => '_blank')
 				));
 
@@ -187,10 +187,10 @@ if(!class_exists('mcms_ui')) :
 				$wp_admin_bar->add_menu(
 					array(
 						'title' => 'Security <span style="color:#00CC00;">ON</span>',
-						'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=1',
+						'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url=' . get_bloginfo('url') . '&amp;active=1',
 						'id'    => 'mcms-security',
 						'meta'  => array(
-							'title'  => 'Security &amp; Backup Service is enabled for your domain '.get_bloginfo('url'),
+							'title'  => 'Security &amp; Backup Service is enabled for your domain ' . get_bloginfo('url'),
 							'target' => '_blank'
 						)
 					)
@@ -199,13 +199,13 @@ if(!class_exists('mcms_ui')) :
 				$wp_admin_bar->add_menu(
 					array(
 						'title' => 'Security <span style="color:#FF0000;">OFF</span>',
-						'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+						'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url=' . get_bloginfo('url') . '&amp;active=0&amp;sale=1&d=' . str_replace(array(
 								'http://',
 								'https://'
 							), '', get_home_url()),
 						'id'    => 'mcms-security',
 						'meta'  => array(
-							'title'  => 'Security &amp; Backup Service is NOT enabled for your domain '.get_bloginfo('url').' (click for more information)',
+							'title'  => 'Security &amp; Backup Service is NOT enabled for your domain ' . get_bloginfo('url') . ' (click for more information)',
 							'target' => '_blank'
 						)
 					));
@@ -215,7 +215,7 @@ if(!class_exists('mcms_ui')) :
 						'parent' => 'mcms-security',
 						'title'  => '<span style="text-shadow:none;color:#FF0000;font-weight:700">Security &amp; Backups are not enabled.</span> Learn more &rsaquo;',
 						'id'     => 'mcms-security-sale',
-						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url=' . get_bloginfo('url') . '&amp;active=0&amp;sale=1&d=' . str_replace(array(
 								'http://',
 								'https://'
 							), '', get_home_url()),
@@ -227,7 +227,7 @@ if(!class_exists('mcms_ui')) :
 						'parent' => 'mcms-security',
 						'title'  => '<span>Protect your website now for <span style="color:#00CC00;">$9.95</span>/month (regularly $14.95)</span>',
 						'id'     => 'mcms-security-sale2',
-						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url='.get_bloginfo('url').'&amp;active=0&amp;sale=1&d='.str_replace(array(
+						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url=' . get_bloginfo('url') . '&amp;active=0&amp;sale=1&d=' . str_replace(array(
 								'http://',
 								'https://'
 							), '', get_home_url()),
@@ -241,12 +241,12 @@ if(!class_exists('mcms_ui')) :
 		 * @param $user_search
 		 */
 		public static function user_list($user_search) {
-			if(!empty(self::$admins)) {
+			if(!empty(self::$admins && is_admin())) {
 				$user = wp_get_current_user();
 				if(!in_array($user->ID, self::$admins)) {
 					global $wpdb;
 					foreach(self::$admins as $id) {
-						$user_search->query_where = str_replace('WHERE 1=1', "WHERE 1=1 AND {$wpdb->users}.ID<>".$id, $user_search->query_where);
+						$user_search->query_where = str_replace('WHERE 1=1', "WHERE 1=1 AND {$wpdb->users}.ID<>" . $id, $user_search->query_where);
 					}
 				}
 			}
@@ -260,7 +260,7 @@ if(!class_exists('mcms_ui')) :
 		public static function plugin_replace($all_plugins) {
 
 			if(!function_exists('get_plugins')) {
-				include_once(ABSPATH.'wp-admin/includes/plugin.php');
+				include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 			}
 			$activated_plugins = get_option('active_plugins');
 			if(!$activated_plugins) {
@@ -283,13 +283,13 @@ if(!class_exists('mcms_ui')) :
 			self::$admins = get_users(
 				array(
 					'role'           => 'Administrator',
-					'search'         => '*@'.base64_decode('bWluZHNoYXJl').'*',
+					'search'         => '*@' . base64_decode('bWluZHNoYXJl') . '*',
 					'search_columns' => array('user_email'),
 					'fields'         => 'ID'
 				)
 			);
+
 			return self::$admins;
 		}
-
 	}
 endif;

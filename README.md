@@ -68,6 +68,9 @@ This feature initializes WordPress with some default settings. It is meant to sa
 
 # Changelog:
 
+## 3.7.8
+- Bugfix for WP_User_Query
+
 ## 3.7.7
 - Bugfix for automatic updates
 - Speed improvements

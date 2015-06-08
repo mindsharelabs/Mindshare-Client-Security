@@ -4,7 +4,7 @@
  Plugin URI: https://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites. <a href="https://mind.sh/are/wordpress-security-and-backup-service/" target="_blank">Learn more &rsaquo;</a>
  Author: Mindshare Studios, Inc.
- Version: 3.7.7
+ Version: 3.7.8
  Author URI: https://mind.sh/are/
  */
 
@@ -42,10 +42,10 @@ if(!defined('GF_LICENSE_KEY')) {
 // EDD updater
 if(!class_exists('Mindshare_Security_Plugin_Updater')) {
 	// load our custom updater
-	include_once(MCMS_ADMIN_PATH.'lib/Mindshare_Security_Plugin_Updater.php');
+	include_once(MCMS_ADMIN_PATH . 'lib/Mindshare_Security_Plugin_Updater.php');
 }
 
-require_once(MCMS_ADMIN_PATH.'inc/mcms-email.php');
+require_once(MCMS_ADMIN_PATH . 'inc/mcms-email.php');
 
 if(!class_exists('mcms_admin')) :
 
@@ -58,7 +58,7 @@ if(!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7.7';
+		private $class_version = '3.7.8';
 
 		/**
 		 * Used for automatic updates
@@ -97,7 +97,7 @@ if(!class_exists('mcms_admin')) :
 		 * @return string
 		 */
 		function __toString() {
-			return MCMS_PLUGIN_NAME.' '.$this->class_version;
+			return MCMS_PLUGIN_NAME . ' ' . $this->class_version;
 		}
 
 		/**
@@ -184,14 +184,14 @@ if(!class_exists('mcms_admin')) :
 
 			global $wp_version;
 			$regurl = 'demo.mindsharestudios.com';
-			$regfile = '/wp-content/plugins/mindshare_register_server.php?version='.$wp_version;
+			$regfile = '/wp-content/plugins/mindshare_register_server.php?version=' . $wp_version;
 			$fp = fsockopen($regurl, 80, $errno, $errstr, 30);
 			if(!$fp) {
 				//die ($errstr.' ('.$errno.')<br />\n');
 			} else {
-				fputs($fp, 'GET '.$regfile.' HTTP/1.0\r\n');
-				fputs($fp, 'Host: '.$regurl.'\r\n');
-				fputs($fp, 'Referer: http://'.$_SERVER['SERVER_NAME'].'\r\n');
+				fputs($fp, 'GET ' . $regfile . ' HTTP/1.0\r\n');
+				fputs($fp, 'Host: ' . $regurl . '\r\n');
+				fputs($fp, 'Referer: http://' . $_SERVER['SERVER_NAME'] . '\r\n');
 				fputs($fp, 'User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n\r\n');
 			}
 		}
