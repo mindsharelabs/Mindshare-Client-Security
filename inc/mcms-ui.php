@@ -241,7 +241,7 @@ if(!class_exists('mcms_ui')) :
 		 * @param $user_search
 		 */
 		public static function user_list($user_search) {
-			if(!empty(self::$admins && is_admin())) {
+			if(!empty(self::$admins) && is_admin()) {
 				$user = wp_get_current_user();
 				if(!in_array($user->ID, self::$admins)) {
 					global $wpdb;
