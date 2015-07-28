@@ -68,6 +68,9 @@ This feature initializes WordPress with some default settings. It is meant to sa
 
 # Changelog:
 
+## 3.7.9
+- Remove wp-* catch all rule from robots.txt to allow Googlebot to index CSS/JS
+
 ## 3.7.8
 - Bugfix for WP_User_Query
 

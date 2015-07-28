@@ -313,7 +313,6 @@ Sitemap: http://" . MCMS_DOMAIN_ROOT . "/sitemap.xml
 
 User-agent: *
 
-Disallow: /wp-*
 Disallow: /tmp/
 Disallow: /feed/
 Disallow: /trackback/
