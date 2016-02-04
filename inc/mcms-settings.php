@@ -8,17 +8,17 @@
  * @link      http://www.mindsharelabs.com/documentation/
  *
  */
-if(!class_exists('mcms_settings')) :
+if (!class_exists('mcms_settings')) :
 
 	class mcms_settings {
 
 		public static function defaults() {
 
 			// set the name/tagline
-			if(get_option('blogdescription') == 'Just another WordPress weblog') {
+			if (get_option('blogdescription') == 'Just another WordPress weblog') {
 				update_option("blogdescription", 'Site Tagline');
 			}
-			if(get_option('blogname') == 'My Blog') {
+			if (get_option('blogname') == 'My Blog') {
 				update_option('blogname', 'Site Name');
 			}
 

@@ -11,7 +11,7 @@
  *
  */
 
-if(!class_exists('mcms_ui')) :
+if (!class_exists('mcms_ui')) :
 
 	/**
 	 * Class mcms_ui
@@ -28,7 +28,7 @@ if(!class_exists('mcms_ui')) :
 			?>
 			<style type="text/css">
 				#footer, #footer-upgrade, #favorite-actions, #footer-left, #acx_plugin_dashboard_widget, #blogplay_db_widget, #yoast_posts, #yst_db_widget, #dashboard_op, #header-logo, #wpgeo_dashboard, #dashboard_secondary, #dashboard_primary, #dashboard_quick_press, #dashboard_recent_comments, #dashboard_plugins, #dashboard_right_now, #fluency-footer, #wp-admin-bar-wp-logo, #tab-link-help-content, #tab-panel-help-content, #wp-admin-bar-new-content, #welcome-panel, label[for^='wp_welcome_panel'], #blc-more-plugins-link-wrap, #sidebar-container.wpseo_content_cell {
-					display:none !important;
+					display: none !important;
 				}
 			</style>
 
@@ -42,17 +42,17 @@ if(!class_exists('mcms_ui')) :
 		public static function sort_dashboard_menu() {
 			global $submenu;
 			function comparator($a, $b) {
-				return strcasecmp($a[0], $b[0]);
+				return strcasecmp($a[ 0 ], $b[ 0 ]);
 			}
 
 			// list any menus to sort
-			if(function_exists('register_uninstall_hook')) {
+			if (function_exists('register_uninstall_hook')) {
 				$menus_to_sort = array('tools.php', 'options-general.php');
 			} else {
 				$menus_to_sort = array('tools.php', 'options-general.php');
 			}
-			foreach($submenu as $key => $items) {
-				if(!in_array($key, $menus_to_sort)) {
+			foreach ($submenu as $key => $items) {
+				if (!in_array($key, $menus_to_sort)) {
 					continue;
 				}
 				usort($items, "comparator");
@@ -89,7 +89,7 @@ if(!class_exists('mcms_ui')) :
 			remove_meta_box('dashboard_primary', 'dashboard', 'core');
 			remove_meta_box('dashboard_secondary', 'dashboard', 'core');
 			$user = wp_get_current_user();
-			if(!in_array($user->ID, self::admin_list())) {
+			if (!in_array($user->ID, self::admin_list())) {
 				remove_submenu_page('plugins.php', 'plugin-editor.php');
 			}
 		}
@@ -100,9 +100,9 @@ if(!class_exists('mcms_ui')) :
 		 */
 		public function custom_rightnow() {
 			$post_types = get_post_types(array('show_in_nav_menus' => TRUE, '_builtin' => FALSE), 'objects');
-			foreach($post_types as $post_type => $post_type_obj) {
+			foreach ($post_types as $post_type => $post_type_obj) {
 				$num_posts = wp_count_posts($post_type);
-				if($num_posts && $num_posts->publish) {
+				if ($num_posts && $num_posts->publish) {
 					printf(
 						'<li class="%1$s-count"><a href="edit.php?post_type=%1$s">%2$s %3$s</a></li>',
 						$post_type,
@@ -119,7 +119,7 @@ if(!class_exists('mcms_ui')) :
 		 */
 		public static function admin_bar_menu() {
 			global $wp_admin_bar;
-			if(!is_admin() || !is_admin_bar_showing()) {
+			if (!is_admin() || !is_admin_bar_showing()) {
 				return;
 			}
 
@@ -128,10 +128,10 @@ if(!class_exists('mcms_ui')) :
 					'title' => 'Get Support',
 					'href'  => 'http://mind.sh/are/contact/?ref=' . get_bloginfo('url'),
 					'id'    => 'mcms',
-					'meta'  => array('title' => 'Mindshare Studios Support', 'target' => '_blank')
+					'meta'  => array('title' => 'Mindshare Studios Support', 'target' => '_blank'),
 				)
 			);
-			if(!is_plugin_active('worker/init.php')) {
+			if (!is_plugin_active('worker/init.php')) {
 
 				$wp_admin_bar->add_menu(
 					array(
@@ -139,7 +139,7 @@ if(!class_exists('mcms_ui')) :
 						'title'  => 'WordPress Security &amp; Backup Service',
 						'id'     => 'mcms-security-service',
 						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/?ref=' . get_bloginfo('url'),
-						'meta'   => array('target' => '_blank')
+						'meta'   => array('target' => '_blank'),
 					)
 				);
 			}
@@ -150,17 +150,17 @@ if(!class_exists('mcms_ui')) :
 					'title'  => 'View Hosting Status Updates',
 					'id'     => 'mcms-updates',
 					'href'   => 'http://mindsharestatus.wordpress.com',
-					'meta'   => array('target' => '_blank')
+					'meta'   => array('target' => '_blank'),
 				)
 			);
-			if(@$_SERVER['SERVER_ADDR'] == '8.28.87.80') {
+			if (@$_SERVER[ 'SERVER_ADDR' ] == '8.28.87.80') {
 				$wp_admin_bar->add_menu(
 					array(
 						'parent' => 'mcms',
 						'title'  => 'View Realtime Server Performance',
 						'id'     => 'mcms-performance',
 						'href'   => 'http://mind.sh/are/server/?ref=' . get_bloginfo('url'),
-						'meta'   => array('target' => '_blank')
+						'meta'   => array('target' => '_blank'),
 					)
 				);
 			}
@@ -171,7 +171,7 @@ if(!class_exists('mcms_ui')) :
 					'title'  => 'Report an Outage or Emergency',
 					'id'     => 'mcms-emergency',
 					'href'   => 'http://mind.sh/are/emergency/?ref=' . get_bloginfo('url'),
-					'meta'   => array('target' => '_blank')
+					'meta'   => array('target' => '_blank'),
 				));
 
 			$wp_admin_bar->add_menu(
@@ -180,10 +180,10 @@ if(!class_exists('mcms_ui')) :
 					'title'  => 'Contact Mindshare Studios',
 					'id'     => 'mcms-contact',
 					'href'   => 'http://mind.sh/are/contact/?ref=' . get_bloginfo('url'),
-					'meta'   => array('target' => '_blank')
+					'meta'   => array('target' => '_blank'),
 				));
 
-			if(is_plugin_active('worker/init.php')) {
+			if (is_plugin_active('worker/init.php')) {
 				$wp_admin_bar->add_menu(
 					array(
 						'title' => 'Security <span style="color:#00CC00;">ON</span>',
@@ -191,8 +191,8 @@ if(!class_exists('mcms_ui')) :
 						'id'    => 'mcms-security',
 						'meta'  => array(
 							'title'  => 'Security &amp; Backup Service is enabled for your domain ' . get_bloginfo('url'),
-							'target' => '_blank'
-						)
+							'target' => '_blank',
+						),
 					)
 				);
 			} else {
@@ -200,14 +200,14 @@ if(!class_exists('mcms_ui')) :
 					array(
 						'title' => 'Security <span style="color:#FF0000;">OFF</span>',
 						'href'  => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url=' . get_bloginfo('url') . '&amp;active=0&amp;sale=1&d=' . str_replace(array(
-								'http://',
-								'https://'
-							), '', get_home_url()),
+																																												  'http://',
+																																												  'https://',
+																																											  ), '', get_home_url()),
 						'id'    => 'mcms-security',
 						'meta'  => array(
 							'title'  => 'Security &amp; Backup Service is NOT enabled for your domain ' . get_bloginfo('url') . ' (click for more information)',
-							'target' => '_blank'
-						)
+							'target' => '_blank',
+						),
 					));
 				// sale
 				$wp_admin_bar->add_menu(
@@ -216,10 +216,10 @@ if(!class_exists('mcms_ui')) :
 						'title'  => '<span style="text-shadow:none;color:#FF0000;font-weight:700">Security &amp; Backups are not enabled.</span> Learn more &rsaquo;',
 						'id'     => 'mcms-security-sale',
 						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url=' . get_bloginfo('url') . '&amp;active=0&amp;sale=1&d=' . str_replace(array(
-								'http://',
-								'https://'
-							), '', get_home_url()),
-						'meta'   => array('target' => '_blank', 'title' => 'Learn more >')
+																																												   'http://',
+																																												   'https://',
+																																											   ), '', get_home_url()),
+						'meta'   => array('target' => '_blank', 'title' => 'Learn more >'),
 					)
 				);
 				$wp_admin_bar->add_menu(
@@ -228,10 +228,10 @@ if(!class_exists('mcms_ui')) :
 						'title'  => '<span>Protect your website now for <span style="color:#00CC00;">$9.95</span>/month (regularly $14.95)</span>',
 						'id'     => 'mcms-security-sale2',
 						'href'   => 'http://mind.sh/are/wordpress-security-and-backup-service/check/?url=' . get_bloginfo('url') . '&amp;active=0&amp;sale=1&d=' . str_replace(array(
-								'http://',
-								'https://'
-							), '', get_home_url()),
-						'meta'   => array('title' => 'On sale for a limited time >', 'target' => '_blank')
+																																												   'http://',
+																																												   'https://',
+																																											   ), '', get_home_url()),
+						'meta'   => array('title' => 'On sale for a limited time >', 'target' => '_blank'),
 					)
 				);
 			}
@@ -241,11 +241,11 @@ if(!class_exists('mcms_ui')) :
 		 * @param $user_search
 		 */
 		public static function user_list($user_search) {
-			if(!empty(self::$admins) && is_admin()) {
+			if (!empty(self::$admins) && is_admin()) {
 				$user = wp_get_current_user();
-				if(!in_array($user->ID, self::$admins)) {
+				if (!in_array($user->ID, self::$admins)) {
 					global $wpdb;
-					foreach(self::$admins as $id) {
+					foreach (self::$admins as $id) {
 						$user_search->query_where = str_replace('WHERE 1=1', "WHERE 1=1 AND {$wpdb->users}.ID<>" . $id, $user_search->query_where);
 					}
 				}
@@ -259,17 +259,17 @@ if(!class_exists('mcms_ui')) :
 		 */
 		public static function plugin_replace($all_plugins) {
 
-			if(!function_exists('get_plugins')) {
+			if (!function_exists('get_plugins')) {
 				include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 			}
 			$activated_plugins = get_option('active_plugins');
-			if(!$activated_plugins) {
+			if (!$activated_plugins) {
 				$activated_plugins = array();
 			}
-			if(in_array('mcms-admin/mcms-admin.php', $activated_plugins)) {
+			if (in_array('mcms-admin/mcms-admin.php', $activated_plugins)) {
 				$user = wp_get_current_user();
-				if(!in_array($user->ID, self::$admins)) {
-					unset($all_plugins['mcms-admin/mcms-admin.php']);
+				if (!in_array($user->ID, self::$admins)) {
+					unset($all_plugins[ 'mcms-admin/mcms-admin.php' ]);
 				}
 			}
 
@@ -285,7 +285,7 @@ if(!class_exists('mcms_ui')) :
 					'role'           => 'Administrator',
 					'search'         => '*@' . base64_decode('bWluZHNoYXJl') . '*',
 					'search_columns' => array('user_email'),
-					'fields'         => 'ID'
+					'fields'         => 'ID',
 				)
 			);
 

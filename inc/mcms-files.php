@@ -9,17 +9,17 @@
  *
  */
 
-if(!function_exists('get_home_path')) {
+if (!function_exists('get_home_path')) {
 	include(ABSPATH . 'wp-admin/includes/file.php');
 }
-if(!function_exists('extract_from_markers')) {
+if (!function_exists('extract_from_markers')) {
 	include(ABSPATH . 'wp-admin/includes/misc.php');
 }
-if(!function_exists('is_plugin_active')) {
+if (!function_exists('is_plugin_active')) {
 	include(ABSPATH . 'wp-admin/includes/plugin.php');
 }
 
-if(!class_exists('mcms_files')) :
+if (!class_exists('mcms_files')) :
 
 	/**
 	 * Class mcms_files
@@ -34,16 +34,16 @@ if(!class_exists('mcms_files')) :
 		 * @return string|bool
 		 */
 		public static function web_server() {
-			if(array_key_exists('SERVER_SOFTWARE', $_SERVER)) {
-				$server = $_SERVER['SERVER_SOFTWARE'];
-				if(stripos($server, 'nginx') !== FALSE) {
+			if (array_key_exists('SERVER_SOFTWARE', $_SERVER)) {
+				$server = $_SERVER[ 'SERVER_SOFTWARE' ];
+				if (stripos($server, 'nginx') !== FALSE) {
 					$server = 'nginx';
-				} elseif(stripos($server, 'apache') !== FALSE) {
+				} elseif (stripos($server, 'apache') !== FALSE) {
 					$server = 'apache';
 				}
 			}
 
-			if(!empty($server)) {
+			if (!empty($server)) {
 				return $server;
 			} else {
 				return FALSE;
@@ -57,32 +57,32 @@ if(!class_exists('mcms_files')) :
 		public static function delete_files() {
 			// remove readme.html
 			$readme = ABSPATH . 'readme.html';
-			if(file_exists($readme)) {
+			if (file_exists($readme)) {
 				unlink($readme);
 			}
 			$qstart = ABSPATH . 'quickstart.html';
-			if(file_exists($qstart)) {
+			if (file_exists($qstart)) {
 				unlink($qstart);
 			}
 			// remove license.txt
 			$lic = ABSPATH . 'license.txt';
-			if(file_exists($lic)) {
+			if (file_exists($lic)) {
 				unlink($lic);
 			}
 			// remove Thumbs.db
 			$thumbs = ABSPATH . 'Thumbs.db';
-			if(file_exists($thumbs)) {
+			if (file_exists($thumbs)) {
 				unlink($thumbs);
 			}
 
 			// remove PHP crash 'core' file
 			$core = ABSPATH . 'core';
-			if(file_exists($core)) {
+			if (file_exists($core)) {
 				unlink($core);
 			}
 
 			// terminate Hello Dolly with extreme prejudice
-			if(file_exists(WP_PLUGIN_DIR . '/hello.php')) {
+			if (file_exists(WP_PLUGIN_DIR . '/hello.php')) {
 				delete_plugins(array('hello.php'));
 			}
 		}
@@ -93,19 +93,19 @@ if(!class_exists('mcms_files')) :
 		 */
 		public static function htaccess_defaults() {
 
-			if(self::web_server() == 'apache') {
+			if (self::web_server() == 'apache') {
 
 				$home_path = get_home_path();
 				$home_root = parse_url(home_url());
-				$https_status = $_SERVER['SERVER_NAME'] ? 'http' : 'https';
-				if(isset($home_root['path'])) {
-					$home_root = trailingslashit($home_root['path']);
+				$https_status = $_SERVER[ 'SERVER_NAME' ] ? 'http' : 'https';
+				if (isset($home_root[ 'path' ])) {
+					$home_root = trailingslashit($home_root[ 'path' ]);
 				} else {
 					$home_root = '/';
 				}
 
 				// check to see if our rules are already there so we don't overwrite any subsequent changes
-				if(sizeof(extract_from_markers($home_path . '.htaccess', 'MINDSHARE')) === 0) {
+				if (sizeof(extract_from_markers($home_path . '.htaccess', 'MINDSHARE')) === 0) {
 
 					$rules = "# .htaccess created automatically by " . MCMS_PLUGIN_NAME . "\n";
 					$rules .= "# http://mind.sh/are\n";
@@ -187,7 +187,7 @@ if(!class_exists('mcms_files')) :
 
 					// GZIP rules start
 
-					if(@$_SERVER['SERVER_ADDR'] == '8.28.87.80' || @$_SERVER['SERVER_ADDR'] == '64.90.58.127' /*|| @$_SERVER['SERVER_ADDR'] == '::1'*/) {
+					if (@$_SERVER[ 'SERVER_ADDR' ] == '8.28.87.80' || @$_SERVER[ 'SERVER_ADDR' ] == '64.90.58.127' /*|| @$_SERVER['SERVER_ADDR'] == '::1'*/) {
 						// enabled by default
 						$rules .= "# Performance: add default Expires header, http://developer.yahoo.com/performance/rules.html#expires\n";
 						$rules .= "<IfModule mod_expires.c>\n";
@@ -260,7 +260,7 @@ if(!class_exists('mcms_files')) :
 					$rules .= "#RewriteCond %{REQUEST_URI} !^/security\.html$\n";
 					$rules .= "#RewriteRule ^(.*)$ " . str_ireplace(array('http://' . MCMS_DOMAIN_ROOT, 'https://' . MCMS_DOMAIN_ROOT), array(
 							'',
-							''
+							'',
 						), get_bloginfo('template_directory')) . "/security.html [L]\n";
 
 					insert_with_markers($home_path . '.htaccess', 'MINDSHARE', explode("\n", $rules));
@@ -279,11 +279,11 @@ if(!class_exists('mcms_files')) :
 		 *
 		 */
 		public static function htaccess_defaults_backupdb() {
-			if(is_plugin_active('wp-dbmanager/wp-dbmanager.php')) {
-				if(self::web_server() == 'apache') {
+			if (is_plugin_active('wp-dbmanager/wp-dbmanager.php')) {
+				if (self::web_server() == 'apache') {
 					$home_path = get_home_path();
 					// check to see if our rules are already there so we don't overwrite any subsequent changes
-					if(sizeof(extract_from_markers($home_path . '/wp-content/backup-db/.htaccess', 'MINDSHARE')) == '0') {
+					if (sizeof(extract_from_markers($home_path . '/wp-content/backup-db/.htaccess', 'MINDSHARE')) == '0') {
 						$rules = "# .htaccess created automatically by " . MCMS_PLUGIN_NAME . "\n";
 						$rules .= "# http://mind.sh/are\n";
 						$rules .= '<Files ~ ".*\..*">';
@@ -303,7 +303,7 @@ if(!class_exists('mcms_files')) :
 		 */
 		public static function robots_defaults() {
 			$robots_txt = ABSPATH . "robots.txt";
-			if(!file_exists($robots_txt)) {
+			if (!file_exists($robots_txt)) {
 				$fh = fopen($robots_txt, 'w');
 				$stringData = "
 # robots.txt created automatically by " . MCMS_PLUGIN_NAME . "
@@ -333,7 +333,7 @@ Disallow: /wp-content/plugins/
 		public static function crossdomain() {
 			_deprecated_function(__FUNCTION__, '3.7.6');
 			$crossdomainFile = ABSPATH . "crossdomain.xml";
-			if(!file_exists($crossdomainFile)) {
+			if (!file_exists($crossdomainFile)) {
 				$fh = fopen($crossdomainFile, 'w');
 				$stringData = "<?xml version=\"1.0\"?>
 <!DOCTYPE cross-domain-policy SYSTEM \"http://www.macromedia.com/xml/dtds/cross-domain-policy.dtd\">

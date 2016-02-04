@@ -9,45 +9,45 @@
  */
 
 // @todo eventually replace this with something cleaner, all we want is the damn domain
-if(!defined('MCMS_DOMAIN_ROOT')) {
-	if(array_key_exists('SERVER_NAME', $_SERVER) && isset($_SERVER['SERVER_NAME'])) {
-		define('MCMS_DOMAIN_ROOT', preg_replace('#^www\.#', '', strtolower($_SERVER['SERVER_NAME'])));
+if (!defined('MCMS_DOMAIN_ROOT')) {
+	if (array_key_exists('SERVER_NAME', $_SERVER) && isset($_SERVER[ 'SERVER_NAME' ])) {
+		define('MCMS_DOMAIN_ROOT', preg_replace('#^www\.#', '', strtolower($_SERVER[ 'SERVER_NAME' ])));
 	} else {
-		define('MCMS_DOMAIN_ROOT', preg_replace('#^www\.#', '', strtolower($_SERVER['HTTP_HOST'])));
+		define('MCMS_DOMAIN_ROOT', preg_replace('#^www\.#', '', strtolower($_SERVER[ 'HTTP_HOST' ])));
 	}
 }
-if(!defined('MCMS_UPDATE_URL')) {
+if (!defined('MCMS_UPDATE_URL')) {
 	define('MCMS_UPDATE_URL', 'https://mindsharelabs.com');
 }
 
-if(!defined('MCMS_PLUGIN_NAME')) {
+if (!defined('MCMS_PLUGIN_NAME')) {
 	define('MCMS_PLUGIN_NAME', 'Mindshare Security');
 }
 
-if(!defined('MCMS_PLUGIN_SLUG')) {
+if (!defined('MCMS_PLUGIN_SLUG')) {
 	define('MCMS_PLUGIN_SLUG', 'mcms-admin');
 }
 
-if(!defined('MCMS_ADMIN_PATH')) {
+if (!defined('MCMS_ADMIN_PATH')) {
 	define('MCMS_ADMIN_PATH', plugin_dir_path(__FILE__));
 }
-if(!defined('MCMS_ADMIN_FILE')) {
+if (!defined('MCMS_ADMIN_FILE')) {
 	define('MCMS_ADMIN_FILE', __FILE__);
 }
 
-if(!defined('GF_LICENSE_KEY')) {
+if (!defined('GF_LICENSE_KEY')) {
 	define('GF_LICENSE_KEY', '25322ade6953d1770a492559697c1480');
 }
 
 // EDD updater
-if(!class_exists('Mindshare_Security_Plugin_Updater')) {
+if (!class_exists('Mindshare_Security_Plugin_Updater')) {
 	// load our custom updater
 	include_once(MCMS_ADMIN_PATH . 'lib/Mindshare_Security_Plugin_Updater.php');
 }
 
 require_once(MCMS_ADMIN_PATH . 'inc/mcms-email.php');
 
-if(!class_exists('mcms_admin')) :
+if (!class_exists('mcms_admin')) :
 
 	class mcms_admin {
 
@@ -106,7 +106,7 @@ if(!class_exists('mcms_admin')) :
 		 */
 		public function install() {
 
-			self::register_site();
+			//self::register_site(); // deprecated web service, maybe we should reactivate at some point?
 			self::activate_acf();
 
 			mcms_files::htaccess_defaults();
@@ -134,7 +134,7 @@ if(!class_exists('mcms_admin')) :
 			$edd_active = get_option('mcmsadmin_license_status');
 
 			// EDD updates are already activated for this site, so exit
-			if($edd_active != 'valid') {
+			if ($edd_active != 'valid') {
 				$response = wp_remote_get(
 					add_query_arg(
 						array(
@@ -146,12 +146,12 @@ if(!class_exists('mcms_admin')) :
 					),
 					array(
 						'timeout'   => 15,
-						'sslverify' => FALSE
+						'sslverify' => FALSE,
 					)
 				);
 
 				// make sure the response came back okay
-				if(is_wp_error($response)) {
+				if (is_wp_error($response)) {
 					return FALSE;
 				}
 
@@ -159,7 +159,7 @@ if(!class_exists('mcms_admin')) :
 				$license_data = json_decode(wp_remote_retrieve_body($response));
 
 				// $license_data->license will be either "valid" or "invalid"
-				if(is_object($license_data)) {
+				if (is_object($license_data)) {
 					update_option('mcmsadmin_license_status', $license_data->license);
 				}
 			}
@@ -171,13 +171,15 @@ if(!class_exists('mcms_admin')) :
 					'version'   => $this->class_version, // current version number
 					'license'   => $this->license_key,
 					'item_name' => MCMS_PLUGIN_NAME, // name of this plugin
-					'author'    => 'Mindshare Studios, Inc.'
+					'author'    => 'Mindshare Studios, Inc.',
 				)
 			);
 		}
 
 		/**
 		 * register_site
+		 *
+		 * @deprecated
 		 *
 		 */
 		public static function register_site() {
@@ -186,12 +188,12 @@ if(!class_exists('mcms_admin')) :
 			$regurl = 'demo.mindsharestudios.com';
 			$regfile = '/wp-content/plugins/mindshare_register_server.php?version=' . $wp_version;
 			$fp = fsockopen($regurl, 80, $errno, $errstr, 30);
-			if(!$fp) {
+			if (!$fp) {
 				//die ($errstr.' ('.$errno.')<br />\n');
 			} else {
 				fputs($fp, 'GET ' . $regfile . ' HTTP/1.0\r\n');
 				fputs($fp, 'Host: ' . $regurl . '\r\n');
-				fputs($fp, 'Referer: http://' . $_SERVER['SERVER_NAME'] . '\r\n');
+				fputs($fp, 'Referer: http://' . $_SERVER[ 'SERVER_NAME' ] . '\r\n');
 				fputs($fp, 'User-Agent: Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)\r\n\r\n');
 			}
 		}
@@ -204,7 +206,7 @@ if(!class_exists('mcms_admin')) :
 			// add ACF pro key
 			$save = array(
 				'key' => 'b3JkZXJfaWQ9MzI5NTN8dHlwZT1kZXZlbG9wZXJ8ZGF0ZT0yMDE0LTA3LTA3IDE1OjU4OjE5',
-				'url' => get_bloginfo('url')
+				'url' => get_bloginfo('url'),
 			);
 			$save = maybe_serialize($save);
 			$save = base64_encode($save);

@@ -11,7 +11,7 @@
  *
  */
 
-if(!class_exists('mcms_blacklist')) :
+if (!class_exists('mcms_blacklist')) :
 
 	class mcms_blacklist {
 
@@ -20,7 +20,7 @@ if(!class_exists('mcms_blacklist')) :
 				'blacklist_keys__last_request',
 				array(
 					'time' => NULL,
-					'etag' => NULL
+					'etag' => NULL,
 				)
 			);
 		}
@@ -35,7 +35,7 @@ if(!class_exists('mcms_blacklist')) :
 		}
 
 		public static function plugin_row_meta($input, $file) {
-			if($file !== plugin_basename(MCMS_ADMIN_FILE)) {
+			if ($file !== plugin_basename(MCMS_ADMIN_FILE)) {
 				return $input;
 			}
 
@@ -44,11 +44,11 @@ if(!class_exists('mcms_blacklist')) :
 			);
 
 			// Get update time
-			if(!empty($options['time'])) {
+			if (!empty($options[ 'time' ])) {
 				$updated = sprintf(
 					'%s %s',
 					human_time_diff(
-						$options['time'],
+						$options[ 'time' ],
 						current_time('timestamp')
 					),
 					translate('ago', 'blacklist_auto_updater')
@@ -66,17 +66,17 @@ if(!class_exists('mcms_blacklist')) :
 						'%s: %s',
 						translate('Blacklist updated', 'blacklist_auto_updater'),
 						$updated
-					)
+					),
 				)
 			);
 		}
 
 		public static function plugins_loaded() {
-			if((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) OR (defined('DOING_AJAX') && DOING_AJAX) OR (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST)) {
+			if ((defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) OR (defined('DOING_AJAX') && DOING_AJAX) OR (defined('XMLRPC_REQUEST') && XMLRPC_REQUEST)) {
 				return;
 			}
 
-			if(!get_transient('blacklist_keys__last_touch')) {
+			if (!get_transient('blacklist_keys__last_touch')) {
 				self::get_blacklist_from_github();
 			}
 		}
@@ -95,18 +95,18 @@ if(!class_exists('mcms_blacklist')) :
 			);
 
 			// Request header
-			if(!empty($options['etag'])) {
+			if (!empty($options[ 'etag' ])) {
 				$args = array(
 					'headers' => array(
-						'If-None-Match' => $options['etag']
-					)
+						'If-None-Match' => $options[ 'etag' ],
+					),
 				);
 			} else {
 				$args = array();
 			}
 
 			// Output debug infos
-			if(defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+			if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
 				error_log('Get blacklist');
 			}
 
@@ -117,8 +117,8 @@ if(!class_exists('mcms_blacklist')) :
 			);
 
 			// Exit on error
-			if(!is_wp_error($response) && wp_remote_retrieve_response_code($response) == 200) {
-				if(defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+			if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) == 200) {
+				if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
 					error_log('Update blacklist');
 				}
 
@@ -134,7 +134,7 @@ if(!class_exists('mcms_blacklist')) :
 						'etag' => wp_remote_retrieve_header(
 							$response,
 							'etag'
-						)
+						),
 					)
 				);
 			}

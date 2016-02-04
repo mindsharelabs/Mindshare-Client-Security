@@ -3,7 +3,7 @@ Mindshare Security
 
 - Author: Mindshare Studios, Inc.
 - License: GPL v3
-- Copyright: 2006-2015
+- Copyright: 2006-2016
 - Link: https://mindsharelabs.com/downloads/mindshare-client-security/
 
 Provides security updates and additional features for WordPress CMS websites.
@@ -67,6 +67,10 @@ This feature initializes WordPress with some default settings. It is meant to sa
 
 
 # Changelog:
+
+## 3.8
+- Cleanup some deprecated fns
+- Update email address settings
 
 ## 3.7.9
 - Remove wp-* catch all rule from robots.txt to allow Googlebot to index CSS/JS
