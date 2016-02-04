@@ -1,7 +1,7 @@
 Mindshare Security
 =============
 
-- Author: Mindshare Studios, Inc.
+- Author: Mindshare Labs, Inc.
 - License: GPL v3
 - Copyright: 2006-2016
 - Link: https://mindsharelabs.com/downloads/mindshare-client-security/
@@ -48,7 +48,7 @@ This feature initializes WordPress with some default settings. It is meant to sa
 * disables commenting by default
 * disables show_avatars by default
 * deletes Hello Dolly, readme.html, license.txt
-* set site admin email to info@mindsharestudios.com
+* set site admin email to info@mindsharelabs.com
 * set RSS feeds to summary mode
 * sets time / date settings
 * sets avatar_rating to PG
@@ -71,6 +71,8 @@ This feature initializes WordPress with some default settings. It is meant to sa
 ## 3.8
 - Cleanup some deprecated fns
 - Update email address settings
+- Update BRI IP
+- 
 
 ## 3.7.9
 - Remove wp-* catch all rule from robots.txt to allow Googlebot to index CSS/JS

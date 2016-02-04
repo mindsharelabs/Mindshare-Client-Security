@@ -5,7 +5,7 @@
  * ui changes
  *
  * @created   9/23/12 3:11 PM
- * @author    Mindshare Studios, Inc.
+ * @author    Mindshare Labs, Inc.
  * @copyright Copyright (c) 2012
  * @link      http://www.mindsharelabs.com/documentation/
  *
@@ -153,7 +153,7 @@ if (!class_exists('mcms_ui')) :
 					'meta'   => array('target' => '_blank'),
 				)
 			);
-			if (@$_SERVER[ 'SERVER_ADDR' ] == '8.28.87.80') {
+			if (@$_SERVER[ 'SERVER_ADDR' ] == '172.97.102.35') {
 				$wp_admin_bar->add_menu(
 					array(
 						'parent' => 'mcms',

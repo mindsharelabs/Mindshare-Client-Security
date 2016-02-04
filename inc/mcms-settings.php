@@ -3,7 +3,7 @@
  * mcms-settings.php
  *
  * @created   9/23/12 3:09 PM
- * @author    Mindshare Studios, Inc.
+ * @author    Mindshare Labs, Inc.
  * @copyright Copyright (c) 2012
  * @link      http://www.mindsharelabs.com/documentation/
  *
@@ -29,7 +29,7 @@ if (!class_exists('mcms_settings')) :
 			update_option('default_comment_status', 'closed');
 
 			// set site email
-			update_option('admin_email', 'info@mindsharestudios.com');
+			update_option('admin_email', 'info@mindsharelabs.com');
 
 			// set RSS feed to summary mode
 			update_option('rss_use_excerpt', '1');

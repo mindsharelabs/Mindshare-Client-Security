@@ -3,7 +3,7 @@
  * mcms-email.php
  *
  * @created   7/11/14 10:00 AM
- * @author    Mindshare Studios, Inc.
+ * @author    Mindshare Labs, Inc.
  * @copyright Copyright (c) 2014
  * @link      http://www.mindsharelabs.com/documentation/
  *

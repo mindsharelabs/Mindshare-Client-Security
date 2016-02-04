@@ -3,8 +3,8 @@
  Plugin Name: Mindshare Security
  Plugin URI: https://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites. <a href="https://mind.sh/are/wordpress-security-and-backup-service/" target="_blank">Learn more &rsaquo;</a>
- Author: Mindshare Studios, Inc.
- Version: 3.7.9
+ Author: Mindshare Labs, Inc.
+ Version: 3.8
  Author URI: https://mind.sh/are/
  */
 
@@ -58,7 +58,7 @@ if (!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.7.9';
+		private $class_version = '3.8';
 
 		/**
 		 * Used for automatic updates
@@ -113,7 +113,6 @@ if (!class_exists('mcms_admin')) :
 			mcms_files::htaccess_defaults_backupdb();
 			mcms_files::delete_files();
 			mcms_files::robots_defaults();
-			//mcms_blacklist::install();
 		}
 
 		/**
@@ -121,7 +120,7 @@ if (!class_exists('mcms_admin')) :
 		 *
 		 */
 		public function uninstall() {
-			//mcms_blacklist::uninstall();
+			// nothing much here
 		}
 
 		/**
@@ -171,7 +170,7 @@ if (!class_exists('mcms_admin')) :
 					'version'   => $this->class_version, // current version number
 					'license'   => $this->license_key,
 					'item_name' => MCMS_PLUGIN_NAME, // name of this plugin
-					'author'    => 'Mindshare Studios, Inc.',
+					'author'    => 'Mindshare Labs, Inc.',
 				)
 			);
 		}
@@ -185,7 +184,7 @@ if (!class_exists('mcms_admin')) :
 		public static function register_site() {
 
 			global $wp_version;
-			$regurl = 'demo.mindsharestudios.com';
+			$regurl = 'demo.mindsharelabs.com';
 			$regfile = '/wp-content/plugins/mindshare_register_server.php?version=' . $wp_version;
 			$fp = fsockopen($regurl, 80, $errno, $errstr, 30);
 			if (!$fp) {

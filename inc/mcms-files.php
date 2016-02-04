@@ -3,7 +3,7 @@
  * mcms-files.php
  *
  * @created   9/23/12 3:11 PM
- * @author    Mindshare Studios, Inc.
+ * @author    Mindshare Labs, Inc.
  * @copyright Copyright (c) 2012
  * @link      http://www.mindsharelabs.com/documentation/
  *
@@ -187,7 +187,7 @@ if (!class_exists('mcms_files')) :
 
 					// GZIP rules start
 
-					if (@$_SERVER[ 'SERVER_ADDR' ] == '8.28.87.80' || @$_SERVER[ 'SERVER_ADDR' ] == '64.90.58.127' /*|| @$_SERVER['SERVER_ADDR'] == '::1'*/) {
+					if (@$_SERVER[ 'SERVER_ADDR' ] == '172.97.102.35' || @$_SERVER[ 'SERVER_ADDR' ] == '64.90.58.127' /*|| @$_SERVER['SERVER_ADDR'] == '::1'*/) {
 						// enabled by default
 						$rules .= "# Performance: add default Expires header, http://developer.yahoo.com/performance/rules.html#expires\n";
 						$rules .= "<IfModule mod_expires.c>\n";
