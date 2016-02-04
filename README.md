@@ -72,7 +72,6 @@ This feature initializes WordPress with some default settings. It is meant to sa
 - Cleanup some deprecated fns
 - Update email address settings
 - Update BRI IP
-- 
 
 ## 3.7.9
 - Remove wp-* catch all rule from robots.txt to allow Googlebot to index CSS/JS
