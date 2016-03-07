@@ -187,7 +187,7 @@ if (!class_exists('mcms_files')) :
 
 					// GZIP rules start
 
-					if (@$_SERVER[ 'SERVER_ADDR' ] == '172.97.102.35' || @$_SERVER[ 'SERVER_ADDR' ] == '64.90.58.127' /*|| @$_SERVER['SERVER_ADDR'] == '::1'*/) {
+					if (@$_SERVER[ 'SERVER_ADDR' ] == '172.97.102.35' || @$_SERVER[ 'SERVER_ADDR' ] == '66.33.194.144' /*|| @$_SERVER['SERVER_ADDR'] == '::1'*/) {
 						// enabled by default
 						$rules .= "# Performance: add default Expires header, http://developer.yahoo.com/performance/rules.html#expires\n";
 						$rules .= "<IfModule mod_expires.c>\n";
