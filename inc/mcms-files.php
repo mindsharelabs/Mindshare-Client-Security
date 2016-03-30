@@ -4,8 +4,8 @@
  *
  * @created   9/23/12 3:11 PM
  * @author    Mindshare Labs, Inc.
- * @copyright Copyright (c) 2012
- * @link      http://www.mindsharelabs.com/documentation/
+ * @copyright Copyright (c) 2012-2016
+ * @link      https://mindsharelabs.com/
  *
  */
 
@@ -97,7 +97,7 @@ if (!class_exists('mcms_files')) :
 
 				$home_path = get_home_path();
 				$home_root = parse_url(home_url());
-				$https_status = $_SERVER[ 'SERVER_NAME' ] ? 'http' : 'https';
+				$https_status = is_ssl() ? 'http' : 'https';
 				if (isset($home_root[ 'path' ])) {
 					$home_root = trailingslashit($home_root[ 'path' ]);
 				} else {
@@ -108,7 +108,7 @@ if (!class_exists('mcms_files')) :
 				if (sizeof(extract_from_markers($home_path . '.htaccess', 'MINDSHARE')) === 0) {
 
 					$rules = "# .htaccess created automatically by " . MCMS_PLUGIN_NAME . "\n";
-					$rules .= "# http://mind.sh/are\n";
+					$rules .= "# https://mind.sh/are\n";
 					$rules .= "\n";
 					$rules .= "# Adjust PHP and Apache settings\n";
 					$rules .= "ServerSignature Off\n";
@@ -144,12 +144,12 @@ if (!class_exists('mcms_files')) :
 					$rules .= "#RewriteCond %{REQUEST_URI} .wp-comments-post\.php*\n";
 					$rules .= "#RewriteCond %{HTTP_REFERER} !.*" . MCMS_DOMAIN_ROOT . ".* [OR]\n";
 					$rules .= "#RewriteCond %{HTTP_USER_AGENT} ^$\n";
-					$rules .= "#RewriteRule (.*) ^http://%{REMOTE_ADDR}/$ [R=301,L] \n";
+					$rules .= "#RewriteRule (.*) ^" . $https_status . "://%{REMOTE_ADDR}/$ [R=301,L] \n";
 					$rules .= "\n";
 					$rules .= "# Security: Prevent hot linking\n";
 					$rules .= "#RewriteBase $home_root\n";
 					$rules .= "#RewriteCond %{HTTP_REFERER} !^$\n";
-					$rules .= "#RewriteCond %{HTTP_REFERER} !^http://(www\.)?" . MCMS_DOMAIN_ROOT . "/.*$ [NC]\n";
+					$rules .= "#RewriteCond %{HTTP_REFERER} !^" . $https_status . "://(www\.)?" . MCMS_DOMAIN_ROOT . "/.*$ [NC]\n";
 					$rules .= "#RewriteRule \.(gif|jpg|png|pdf|mp3|flv|swf)$ " . get_bloginfo('template_directory') . "/img/hotlinking.png [R=302,L]\n";
 					$rules .= "\n";
 					$rules .= "# Enable rewrite engine\n";
@@ -160,7 +160,7 @@ if (!class_exists('mcms_files')) :
 					$rules .= "# Remove www\n";
 					$rules .= "RewriteCond %{HTTPS} off\n";
 					$rules .= "RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]\n";
-					$rules .= "RewriteRule ^(.*)$ http://%1/$1 [R=301,L]\n";
+					$rules .= "RewriteRule ^(.*)$ " . $https_status . "://%1/$1 [R=301,L]\n";
 					$rules .= "\n";
 					$rules .= "RewriteCond %{HTTPS} on\n";
 					$rules .= "RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]\n";
@@ -169,7 +169,7 @@ if (!class_exists('mcms_files')) :
 					$rules .= "# Add www\n";
 					$rules .= "#RewriteCond %{HTTPS} off\n";
 					$rules .= "#RewriteCond %{HTTP_HOST} !^www\.(.*)$ [NC]\n";
-					$rules .= "#RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [R=301,L]\n";
+					$rules .= "#RewriteRule ^(.*)$ " . $https_status . "://www.%{HTTP_HOST}/$1 [R=301,L]\n";
 					$rules .= "\n";
 					$rules .= "#RewriteCond %{HTTPS} on\n";
 					$rules .= "#RewriteCond %{HTTP_HOST} !^www\.(.*)$ [NC]\n";
@@ -258,7 +258,7 @@ if (!class_exists('mcms_files')) :
 					$rules .= "#RewriteBase $home_root\n";
 					$rules .= "#RewriteCond %{REMOTE_ADDR} !^111\.111\.111\.111$\n";
 					$rules .= "#RewriteCond %{REQUEST_URI} !^/security\.html$\n";
-					$rules .= "#RewriteRule ^(.*)$ " . str_ireplace(array('http://' . MCMS_DOMAIN_ROOT, 'https://' . MCMS_DOMAIN_ROOT), array(
+					$rules .= "#RewriteRule ^(.*)$ " . str_ireplace(array($https_status . '://' . MCMS_DOMAIN_ROOT, $https_status . '://' . MCMS_DOMAIN_ROOT), array(
 							'',
 							'',
 						), get_bloginfo('template_directory')) . "/security.html [L]\n";
@@ -266,9 +266,11 @@ if (!class_exists('mcms_files')) :
 					insert_with_markers($home_path . '.htaccess', 'MINDSHARE', explode("\n", $rules));
 				}
 				// these rules get added every time the plugin is activated
-				$force_rules = "Redirect 301 " . $home_root . "wp-admin/credits.php http://" . MCMS_DOMAIN_ROOT . $home_root . "wp-admin/index.php\n";
-				$force_rules .= "Redirect 301 " . $home_root . "wp-admin/about.php http://" . MCMS_DOMAIN_ROOT . $home_root . "wp-admin/index.php\n";
-				$force_rules .= "Redirect 301 " . $home_root . "wp-admin/freedoms.php http://" . MCMS_DOMAIN_ROOT . $home_root . "wp-admin/index.php\n";
+				$force_rules = "Redirect 301 " . $home_root . "wp-admin/credits.php " . $https_status . "://" . MCMS_DOMAIN_ROOT . $home_root . "wp-admin/index.php\n";
+				$force_rules .= "Redirect 301 " . $home_root . "wp-admin/about.php " . $https_status . "://" . MCMS_DOMAIN_ROOT . $home_root . "wp-admin/index.php\n";
+				$force_rules .= "Redirect 301 " . $home_root . "wp-admin/freedoms.php " . $https_status . "://" . MCMS_DOMAIN_ROOT . $home_root . "wp-admin/index.php\n";
+				$force_rules .= "# Prevent access to .git files and folders\n";
+				$force_rules .= "RedirectMatch 404 /\.git\n";
 
 				insert_with_markers($home_path . '.htaccess', 'MINDSHARE-FORCE', explode("\n", $force_rules));
 			}
@@ -285,7 +287,7 @@ if (!class_exists('mcms_files')) :
 					// check to see if our rules are already there so we don't overwrite any subsequent changes
 					if (sizeof(extract_from_markers($home_path . '/wp-content/backup-db/.htaccess', 'MINDSHARE')) == '0') {
 						$rules = "# .htaccess created automatically by " . MCMS_PLUGIN_NAME . "\n";
-						$rules .= "# http://mind.sh/are\n";
+						$rules .= "# https://mind.sh/are\n";
 						$rules .= '<Files ~ ".*\..*">';
 						$rules .= "\n";
 						$rules .= "order allow,deny\n";
@@ -302,14 +304,15 @@ if (!class_exists('mcms_files')) :
 		 *
 		 */
 		public static function robots_defaults() {
+			$https_status = is_ssl() ? 'https' : 'http';
 			$robots_txt = ABSPATH . "robots.txt";
 			if (!file_exists($robots_txt)) {
 				$fh = fopen($robots_txt, 'w');
 				$stringData = "
 # robots.txt created automatically by " . MCMS_PLUGIN_NAME . "
-# http://mind.sh/are/
+# https://mind.sh/are/
 
-Sitemap: http://" . MCMS_DOMAIN_ROOT . "/sitemap.xml
+Sitemap: " . $https_status . "://" . MCMS_DOMAIN_ROOT . "/sitemap.xml
 
 User-agent: *
 
@@ -329,6 +332,7 @@ Disallow: /wp-content/plugins/
 		/**
 		 * Create crossdomain.xml file for Flash
 		 *
+		 * @deprecated
 		 */
 		public static function crossdomain() {
 			_deprecated_function(__FUNCTION__, '3.7.6');
@@ -341,7 +345,7 @@ Disallow: /wp-content/plugins/
 				$stringData .= "\t<allow-access-from domain=\"*." . MCMS_DOMAIN_ROOT . "\" />";
 				$stringData .= "\n</cross-domain-policy>
 <!-- crossdomain.xml created automatically by " . MCMS_PLUGIN_NAME . " -->
-<!-- http://mind.sh/are/ -->";
+<!-- https://mind.sh/are/ -->";
 				fwrite($fh, $stringData);
 				fclose($fh);
 			}

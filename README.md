@@ -68,6 +68,9 @@ This feature initializes WordPress with some default settings. It is meant to sa
 
 # Changelog:
 
+## 3.8.1
+- Added .htaccess rule to block .git files and folders
+
 ## 3.8
 - Cleanup some deprecated fns
 - Update email address settings
