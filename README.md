@@ -3,7 +3,7 @@ Mindshare Security
 
 - Author: Mindshare Labs, Inc.
 - License: GPL v3
-- Copyright: 2006-2016
+- Copyright: 2006-2017
 - Link: https://mindsharelabs.com/downloads/mindshare-client-security/
 
 Provides security updates and additional features for WordPress CMS websites.
@@ -65,8 +65,10 @@ This feature initializes WordPress with some default settings. It is meant to sa
 * sets frontpage to static page
 * sets permalinks to "/%category%/%postname%/"
 
-
 # Changelog:
+
+## 3.8.2
+- Updated .htaccess rules for SSL
 
 ## 3.8.1
 - Added .htaccess rule to block .git files and folders

@@ -4,7 +4,7 @@
  Plugin URI: https://mindsharelabs.com/downloads/mindshare-client-security/
  Description: Provides security updates and additional features for WordPress CMS websites. <a href="https://mind.sh/are/wordpress-security-and-backup-service/" target="_blank">Learn more &rsaquo;</a>
  Author: Mindshare Labs, Inc.
- Version: 3.8.1
+ Version: 3.8.2
  Author URI: https://mind.sh/are/
  */
 
@@ -58,7 +58,7 @@ if (!class_exists('mcms_admin')) :
 		 *
 		 * @var string
 		 */
-		private $class_version = '3.8.1';
+		private $class_version = '3.8.2';
 
 		/**
 		 * Used for automatic updates

@@ -176,8 +176,9 @@ if (!class_exists('mcms_files')) :
 					$rules .= "#RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]\n";
 					$rules .= "\n";
 					$rules .= "# Force SSL\n";
-					$rules .= "#RewriteCond %{HTTPS} !=on\n";
-					$rules .= "#RewriteRule .* https://%{SERVER_NAME}%{REQUEST_URI} [R,L]\n";
+					$rules .= "#RewriteCond %{SERVER_PORT} !^443$\n";
+					$rules .= "#RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]\n";
+					$rules .= "#RewriteBase /\n";
 					$rules .= "</IfModule>\n";
 					$rules .= "\n";
 					$rules .= "# Add login/out redirects\n";
